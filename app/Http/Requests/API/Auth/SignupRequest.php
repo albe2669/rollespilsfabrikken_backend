@@ -28,8 +28,8 @@ class SignupRequest extends FormRequest
             'username' => 'string|required',
             'email' => 'email|unique:users,email|confirmed|required',
             'password' => 'string|required|min:8|confirmed',
-            'security_question' => 'string|required',
-            'answer' => 'string|required'
+            /*'security_question' => 'string|required',
+            'answer' => 'string|required'*/
         ];
     }
 }
