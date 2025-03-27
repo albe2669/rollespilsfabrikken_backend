@@ -44,14 +44,6 @@ class AuthController extends Controller
      * @return string activation_token // TODO: REMOVE THIS
      */
     public function signup(SignupRequest $request) {
-        $securityQuestion = (new SecurityQuestion)->whereUuid($request['security_question'])->firstOrFail();
-
-        if (mb_strtolower($securityQuestion['answer']) !== mb_strtolower($request['answer'])) {
-            return response()->json([
-                'message' => 'Svaret var forkert'
-            ], 401);
-        }
-
         $request['password'] = Hash::make($request['password']);
         $request['activation_token'] = Str::random(60);
 
