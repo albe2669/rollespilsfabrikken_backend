@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders\Production;
+
 use App\Models\Obj;
 use App\Models\SecurityQuestion;
 use Illuminate\Database\Seeder;
@@ -18,7 +20,7 @@ class SecurityQuestionProductionSeeder extends Seeder
 
     public function run()
     {
-        $this->faker = Faker::create();
+        fake() = Faker::create();
 
         self::create('På hvilken vej lå den ægte fabrik?',                  'Glentevej');
         self::create('Hvilket år bliver JRK stiftet?',                      '2005');

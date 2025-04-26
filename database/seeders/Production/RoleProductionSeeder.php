@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders\Production;
+
 use App\Models\RolePerm;
 use App\Models\User;
 use App\Models\UserRole;
@@ -19,7 +21,7 @@ class RoleProductionSeeder extends Seeder
         $role = (new Role())
             ->fill([
                 'title' => $title,
-                'color' => $this->faker->hexColor
+                'color' => fake()->hexColor
             ]);
         $role->save();
 
@@ -50,7 +52,7 @@ class RoleProductionSeeder extends Seeder
 
     public function run()
     {
-        $this->faker = Faker::create();
+        fake() = Faker::create();
 
         // Padawan
         self::create('Padawan');

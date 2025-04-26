@@ -9,7 +9,7 @@ use Tests\Helpers\TestHelper;
 
 class CalendarTest extends TestCase
 {
-    public function testCreateCalendarWithMiddleware()
+    public function testCreateCalendarWithMiddleware(): void
     {
         $data = [
             'title' => 'Calendar title for unit',
@@ -23,14 +23,15 @@ class CalendarTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
-    public function  testCreateCalendarWithoutRoles() {
+    public function  testCreateCalendarWithoutRoles(): void
+    {
         $data = [
             'title' => 'Calendar title for unit',
             'description'  => 'Calendar description for unit',
             'colour' => '#9448bc',
         ];
 
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         $this
             ->actingAs($user, 'sanctum')
@@ -46,7 +47,7 @@ class CalendarTest extends TestCase
             'colour' => '#9448bc',
         ];
 
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         $this
             ->actingAs($user, 'sanctum')
@@ -62,7 +63,7 @@ class CalendarTest extends TestCase
             'colour' => '#9448bc',
         ];
 
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         $user['super_user'] = 1;
         $user->save();
@@ -98,8 +99,8 @@ class CalendarTest extends TestCase
     }
 
     public function testGetAllCalendarsAsAdmin() {
-        $calendar = factory(Calendar::class)->create();
-        $user = factory(User::class)->create();
+        $calendar = Calendar::factory()->create();
+        $user = User::factory()->create();
 
         $user['super_user'] = 1;
         $user->save();
@@ -147,8 +148,8 @@ class CalendarTest extends TestCase
     }
 
     public function testGetAllCalendarsAsUser() {
-        $calendar = factory(Calendar::class)->create();
-        $user = factory(User::class)->create();
+        $calendar = Calendar::factory()->create();
+        $user = User::factory()->create();
 
         (new TestHelper())->giveUserPermission($user, $calendar['obj_id'], 2);
 
@@ -201,8 +202,8 @@ class CalendarTest extends TestCase
             'colour' => '#9448bc',
         ];
 
-        $calendar = factory(Calendar::class)->create();
-        $user = factory(User::class)->create();
+        $calendar = Calendar::factory()->create();
+        $user = User::factory()->create();
 
         (new TestHelper())->giveUserPermission($user, $calendar['obj_id'], 6);
 
@@ -244,8 +245,8 @@ class CalendarTest extends TestCase
             'colour' => '#9448bc',
         ];
 
-        $calendar = factory(Calendar::class)->create();
-        $user = factory(User::class)->create();
+        $calendar = Calendar::factory()->create();
+        $user = User::factory()->create();
 
         $user['super_user'] = 1;
         $user->save();
@@ -282,7 +283,7 @@ class CalendarTest extends TestCase
     }
 
     public function testDeleteCalendar() {
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         $user['super_user'] = 1;
         $user->save();

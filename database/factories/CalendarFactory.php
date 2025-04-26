@@ -1,25 +1,25 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
 use App\Models\Calendar;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Calendar::class, function (Faker $faker) {
-    return [
-        'title' => $faker->streetName,
-        'description' => $faker->text(200),
-        'colour' => $faker->hexColor,
-        'obj_id' => function() {
-            return (new App\Models\Obj)->create([
-                'type' => 'calendar'
-            ])['id'];
-        }
-    ];
-});
+class CalendarFactory extends Factory
+{
+    protected $model = Calendar::class;
 
-$factory->afterCreating(App\Models\Calendar::class, function ($calendar, $faker) {
-    factory(App\Models\Event::class, 1)->create([
-       'calendar_id' => $calendar['id']
-    ]);
-});
+    public function definition(): array
+    {
+        return [
+            'title' => fake()->streetName,
+            'description' => fake()->text(200),
+            'colour' => fake()->hexColor,
+            'obj_id' => function() {
+                return (new App\Models\Obj)->create([
+                    'type' => 'calendar'
+                ])['id'];
+            }
+        ];
+    }
+}

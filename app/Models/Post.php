@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Dyrynda\Database\Casts\EfficientUuid;
+use Dyrynda\Database\Support\Casts\EfficientUuid;;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Laravel\Scout\Searchable;
@@ -28,7 +29,7 @@ use Laravel\Scout\Searchable;
  */
 class Post extends Model
 {
-    use Searchable, GeneratesUuid;
+    use Searchable, GeneratesUuid, HasFactory;
 
     protected static function boot()
     {

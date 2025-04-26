@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Casts\EfficientUuid;
+use Dyrynda\Database\Support\Casts\EfficientUuid;;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -20,12 +21,12 @@ use Laravel\Scout\Searchable;
  * @property bool $show
  * @property Carbon $created_at
  * @property Carbon $updated_at
- * 
+ *
  * @mixin Builder
  */
 class Role extends Model
 {
-    use Searchable, GeneratesUuid;
+    use Searchable, GeneratesUuid, HasFactory;
 
     protected $casts = [
         'uuid' => EfficientUuid::class,

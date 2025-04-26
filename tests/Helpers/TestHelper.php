@@ -9,8 +9,9 @@ use App\Models\User;
 
 class TestHelper
 {
-    public function giveUserPermission(User $user, $obj_id, $level) {
-        $role = factory(Role::class)->create();
+    public function giveUserPermission(User $user, $obj_id, $level): void
+    {
+        $role = Role::factory()->create();
 
         (new \App\Models\RolePerm)->create([
             'role_id' => $role['id'],

@@ -1,35 +1,38 @@
 <?php
 
-use App\Models\Calendar;
+namespace Database\Seeders\Production;
+
+use App\Models\Forum;
 use App\Models\Obj;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
 use Faker\Generator;
 
-class CalendarProductionSeeder extends Seeder
+class ForumProductionSeeder extends Seeder
 {
     private Generator $faker;
 
     private function create($title, $description) {
-        (new Calendar())
+        (new Forum())
             ->fill([
                 'title' => $title,
                 'description' => $description,
-                'colour' => $this->faker->hexColor
+                'colour' => fake()->hexColor
             ])
             ->obj()
             ->associate((new Obj)->create([
-                'type' => 'calendar'
+                'type' => 'forum'
             ]))->save();
     }
 
     public function run()
     {
-        $this->faker = Faker::create();
+        fake() = Faker::create();
 
-        self::create('Vanbooking',          'Booking af varevogne');
-        self::create('Lokalebooking',       'Booking af lokaler');
-        self::create('Faste arrangementer', 'Faste arrangementer');
+        self::create('Rude Skov',           '');
+        self::create('Amager Fælled',       '');
+        self::create('Den Magiske Skole',   '');
         self::create('Nøglebærere',         '');
+        self::create('Andet',               '');
     }
 }

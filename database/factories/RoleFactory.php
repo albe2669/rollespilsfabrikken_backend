@@ -1,13 +1,19 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
 use App\Models\Role;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Role::class, function (Faker $faker) {
-    return [
-        'title' => $faker->title,
-        'color' => $faker->hexColor
-    ];
-});
+class RoleFactory extends Factory
+{
+    protected $model = Role::class;
+
+    public function definition(): array
+    {
+        return [
+            'title' => fake()->title,
+            'color' => fake()->hexColor
+        ];
+    }
+}

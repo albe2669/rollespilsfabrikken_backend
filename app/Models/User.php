@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Casts\EfficientUuid;
+use Dyrynda\Database\Support\Casts\EfficientUuid;;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -31,9 +32,9 @@ use Laravel\Sanctum\HasApiTokens;
  *
  * @mixin Builder
  */
-class User extends Authenticatable implements CanResetPassword
+class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable, GeneratesUuid;
+    use HasApiTokens, Notifiable, GeneratesUuid, HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -102,7 +103,7 @@ class User extends Authenticatable implements CanResetPassword
 
         return $perms->unique()->values()->all();
     }
-    
+
     public function posts() {
         return $this->hasMany('App\Models\Post');
     }

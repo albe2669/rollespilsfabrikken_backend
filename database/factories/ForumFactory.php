@@ -1,27 +1,26 @@
 <?php
 
-/** @var Factory $factory */
+namespace Database\Factories;
 
 use App\Models\Forum;
-use Faker\Generator as Faker;
-use Illuminate\Database\Eloquent\Factory;
+use App\Models\Obj;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
+class ForumFactory extends Factory
+{
+    protected $model = Forum::class;
 
-$factory->define(Forum::class, function (Faker $faker) {
-    return [
-        'title' => $faker->streetName,
-        'description' => $faker->text(200),
-        'colour' => $faker->hexColor,
-        'obj_id' => function() {
-            return (new App\Models\Obj)->create([
-                'type' => 'forum'
-            ])['id'];
-        }
-    ];
-});
-
-$factory->afterCreating(App\Models\Forum::class, function ($forum, $faker) {
-    factory(App\Models\Post::class, 1)->create([
-        'forum_id' => $forum['id']
-    ]);
-});
+    public function definition()
+    {
+        return [
+            'title' => fake()->streetName,
+            'description' => fake()->text(200),
+            'colour' => fake()->hexColor,
+            'obj_id' => function() {
+                return (new Obj)->create([
+                    'type' => 'forum'
+                ])['id'];
+            }
+        ];
+    }
+}

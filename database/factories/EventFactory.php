@@ -1,17 +1,25 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
+use App\Models\Calendar;
 use App\Models\Event;
-use Faker\Generator as Faker;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Event::class, function (Faker $faker) {
-    return [
-        'user_id' => rand(1, DB::table('users')->select('id')->get()->pluck('id')->count()),
-        'calendar_id' => 1,
-        'title' => $faker->text,
-        'description' => $faker->text(400),
-        'start' => $faker->dateTime,
-        'end' => $faker->dateTime
-    ];
-});
+class EventFactory extends Factory
+{
+    protected $model = Event::class;
+
+    public function definition(): array
+    {
+        return [
+            'user_id' => User::factory(),
+            'calendar_id' => Calendar::factory(),
+            'title' => fake()->text,
+            'description' => fake()->text(400),
+            'start' => fake()->dateTime,
+            'end' => fake()->dateTime
+        ];
+    }
+}
