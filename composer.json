@@ -68,6 +68,10 @@
         "php-cs-fixer": "php-cs-fixer fix --config=./.php-cs-fixer.dist.php",
         "php-cs-fixer-check": "php-cs-fixer check --config=./.php-cs-fixer.dist.php",
         "pint": "pint --no-interaction",
-        "pint-check": "pint --test --no-interaction --dirty"
+        "pint-check": "pint --test --no-interaction --dirty",
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" --names=server,queue,logs"
+        ]
     }
 }
