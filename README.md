@@ -14,6 +14,7 @@ This repo serves as the backend for the Rollespilsfabrikkens forum
     * [Running the app](#running-the-app)
     * [Skipping all of this when syncing](#skipping-all-of-this-when-syncing)
     * [Pre-commit hooks](#pre-commit-hooks)
+    * [Formatting and linting](#formatting-and-linting)
   * [Frontend deployment](#frontend-deployment)
 <!-- TOC -->
 
@@ -57,11 +58,19 @@ php artisan migrate
 ```
 
 #### IDE integration
-If you are using PhpStorm, you can set up the IDE integration by running the following command:
+If you are using PhpStorm, you can generate the IDE integration files by running the following command:
 
 ```bash
 make ide
 ```
+
+We then recommend following the following guides and extensions to set up the IDE integration:
+
+- [PHP-CS-Fixer](https://www.jetbrains.com/help/phpstorm/using-php-cs-fixer.html#installing-configuring-php-cs-fixer)
+- [Symfony Plugin](https://plugins.jetbrains.com/plugin/7219-symfony-plugin)
+- [Php Inspections (EA Extended)](https://plugins.jetbrains.com/plugin/7622-php-inspections-ea-extended-)
+- [PHP Annotations](https://plugins.jetbrains.com/plugin/7320-php-annotations)
+- [Laravel Idea](https://plugins.jetbrains.com/plugin/13441-laravel-idea)
 
 ### Running the app
 Now simply run the following command to start the app:
@@ -82,6 +91,13 @@ The repo uses pre-commit hooks to run the linters and formatters before committi
 
 ```bash
 make hooks
+```
+
+### Formatting and linting
+The repo uses PHP CS Fixer and Pint for formatting and linting. You can run the following commands to format and lint the code:
+
+```bash
+make fix
 ```
 
 
