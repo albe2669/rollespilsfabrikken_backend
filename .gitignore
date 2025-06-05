@@ -18,6 +18,10 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 /tmp
+/_ide_helper.php
+/_ide_helper_models.php
+/.phpstorm.meta.php
+/.php-cs-fixer.cache
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/vim,linux,macos,direnv,laravel,phpunit,windows,composer,phpstorm,php-cs-fixer,phpstorm+all,visualstudiocode

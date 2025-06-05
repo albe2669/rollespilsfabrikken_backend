@@ -21,6 +21,7 @@
         "ext-fileinfo": "*"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.5",
         "fakerphp/faker": "^1.23",
         "friendsofphp/php-cs-fixer": "^3.75",
         "laravel/pint": "^1.22",
