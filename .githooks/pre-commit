@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+composer run php-cs-fixer-check
+composer run pint-check
