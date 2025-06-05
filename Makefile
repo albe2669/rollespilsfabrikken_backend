@@ -19,11 +19,12 @@ hooks:
 	@echo "Git hooks have been set up in .githooks directory."
 
 cache:
-	php8.3 artisan cache:clear
-	php8.3 artisan config:cache
-	php8.3 artisan event:cache
-	php8.3 artisan route:cache
-	php8.3 artisan view:cache
+	php artisan cache:clear
+	php artisan config:cache
+	php artisan event:cache
+	php artisan route:cache
+	php artisan view:cache
 
 fix:
 	composer run php-cs-fixer
+	composer run pint

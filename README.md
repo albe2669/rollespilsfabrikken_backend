@@ -67,6 +67,7 @@ make ide
 We then recommend following the following guides and extensions to set up the IDE integration:
 
 - [PHP-CS-Fixer](https://www.jetbrains.com/help/phpstorm/using-php-cs-fixer.html#installing-configuring-php-cs-fixer)
+- [Laravel Pint](https://www.jetbrains.com/help/phpstorm/using-laravel-pint.html)
 - [Symfony Plugin](https://plugins.jetbrains.com/plugin/7219-symfony-plugin)
 - [Php Inspections (EA Extended)](https://plugins.jetbrains.com/plugin/7622-php-inspections-ea-extended-)
 - [PHP Annotations](https://plugins.jetbrains.com/plugin/7320-php-annotations)
