@@ -1,6 +1,7 @@
 .PHONY: init sync ide
 
 init:
+	cp .env.example .env
 	php artisan key:generate
 
 sync:
@@ -26,5 +27,4 @@ cache:
 	php artisan view:cache
 
 fix:
-	composer run php-cs-fixer
 	composer run pint
