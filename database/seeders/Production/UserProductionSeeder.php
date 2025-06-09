@@ -37,6 +37,6 @@ class UserProductionSeeder extends Seeder
             ->getImageObject()
             ->toPng();
 
-        Storage::disk('local')->put('public/avatars/' . $user->uuid . '/avatar.png', (string) $avatar);
+        Storage::disk('local')->put('public/avatars/'.$user->uuid.'/avatar.png', (string) $avatar);
     }
 }

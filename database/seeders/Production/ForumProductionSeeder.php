@@ -4,7 +4,6 @@ namespace Database\Seeders\Production;
 
 use App\Models\Forum;
 use App\Models\Obj;
-use Faker\Factory as Faker;
 use Faker\Generator;
 use Illuminate\Database\Seeder;
 
