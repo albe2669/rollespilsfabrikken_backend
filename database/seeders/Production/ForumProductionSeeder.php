@@ -4,35 +4,34 @@ namespace Database\Seeders\Production;
 
 use App\Models\Forum;
 use App\Models\Obj;
-use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
 use Faker\Generator;
+use Illuminate\Database\Seeder;
 
 class ForumProductionSeeder extends Seeder
 {
     private Generator $faker;
 
-    private function create($title, $description) {
-        (new Forum())
+    private function create($title, $description)
+    {
+        (new Forum)
             ->fill([
                 'title' => $title,
                 'description' => $description,
-                'colour' => fake()->hexColor
+                'colour' => fake()->hexColor,
             ])
             ->obj()
             ->associate((new Obj)->create([
-                'type' => 'forum'
+                'type' => 'forum',
             ]))->save();
     }
 
     public function run()
     {
-        fake() = Faker::create();
-
-        self::create('Rude Skov',           '');
-        self::create('Amager Fælled',       '');
-        self::create('Den Magiske Skole',   '');
-        self::create('Nøglebærere',         '');
-        self::create('Andet',               '');
+        $this->create('Rude Skov', '');
+        $this->create('Amager Fælled', '');
+        $this->create('Den Magiske Skole', '');
+        $this->create('Nøglebærere', '');
+        $this->create('Andet', '');
     }
 }

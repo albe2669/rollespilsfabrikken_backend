@@ -1,12 +1,12 @@
 <?php
 
+use App\Models\Role;
+use Database\Seeders\Production\RoleProductionSeeder;
+use Faker\Factory as Faker;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Role;
-
-use Faker\Factory as Faker;
 
 class AddColorToRoles extends Migration
 {

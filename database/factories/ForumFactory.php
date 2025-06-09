@@ -16,11 +16,11 @@ class ForumFactory extends Factory
             'title' => fake()->streetName,
             'description' => fake()->text(200),
             'colour' => fake()->hexColor,
-            'obj_id' => function() {
+            'obj_id' => function () {
                 return (new Obj)->create([
-                    'type' => 'forum'
+                    'type' => 'forum',
                 ])['id'];
-            }
+            },
         ];
     }
 }

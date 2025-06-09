@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-
 use App\Models\Forum;
 use App\Models\Post;
 use App\Models\User;
@@ -18,7 +17,7 @@ class PostFactory extends Factory
             'user_id' => User::factory(),
             'forum_id' => Forum::factory(),
             'title' => fake()->text,
-            'body' => fake()->text(400)
+            'body' => fake()->text(400),
         ];
     }
 }

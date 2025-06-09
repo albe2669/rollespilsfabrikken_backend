@@ -17,7 +17,7 @@ class CommentFactory extends Factory
             'user_id' => User::factory(),
             'post_id' => Post::factory(),
             'parent_id' => null,
-            'body' => fake()->text
+            'body' => fake()->text,
         ];
     }
 }

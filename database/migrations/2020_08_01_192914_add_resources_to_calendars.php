@@ -18,7 +18,7 @@ class AddResourcesToCalendars extends Migration
                 'all',
                 'none',
                 'equipment',
-                'rooms'
+                'rooms',
             ])->default('none');
         });
     }

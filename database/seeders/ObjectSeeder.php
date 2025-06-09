@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Calendar;
+use App\Models\Forum;
 use Illuminate\Database\Seeder;
 
 class ObjectSeeder extends Seeder
@@ -13,7 +15,7 @@ class ObjectSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\Forum::class, 20)->create();
-        factory(App\Models\Calendar::class, 20)->create();
+        Forum::factory(20)->create();
+        Calendar::factory(20)->create();
     }
 }

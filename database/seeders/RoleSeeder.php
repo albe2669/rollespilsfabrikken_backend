@@ -2,11 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
+use App\Models\RolePerm;
 use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      *
@@ -14,20 +15,20 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\Role::class, 20)
+        Role::factory(20)
             ->create()
             ->each(function ($role) {
-                $nums = array(1);
+                $nums = [1];
 
                 for ($j = 1; $j <= 20; $j++) {
                     $num = 1;
                     while (in_array($num, $nums)) {
-                        $num = rand(1,110);
+                        $num = rand(1, 110);
                     }
 
-                    (new App\Models\RolePerm)->create([
+                    RolePerm::create([
                         'role_id' => $role['id'],
-                        'permission_id' => $num
+                        'permission_id' => $num,
                     ]);
                 }
             });

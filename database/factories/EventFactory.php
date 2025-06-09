@@ -19,7 +19,7 @@ class EventFactory extends Factory
             'title' => fake()->text,
             'description' => fake()->text(400),
             'start' => fake()->dateTime,
-            'end' => fake()->dateTime
+            'end' => fake()->dateTime,
         ];
     }
 }

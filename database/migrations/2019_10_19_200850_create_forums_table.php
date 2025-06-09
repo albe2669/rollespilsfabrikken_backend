@@ -1,5 +1,6 @@
 <?php
 
+use Database\Seeders\Production\ForumProductionSeeder;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;

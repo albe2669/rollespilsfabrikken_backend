@@ -13,7 +13,7 @@ class RoleFactory extends Factory
     {
         return [
             'title' => fake()->title,
-            'color' => fake()->hexColor
+            'color' => fake()->hexColor,
         ];
     }
 }

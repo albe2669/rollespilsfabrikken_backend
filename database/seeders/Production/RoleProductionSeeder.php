@@ -2,98 +2,102 @@
 
 namespace Database\Seeders\Production;
 
+use App\Models\Calendar;
+use App\Models\Forum;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\RolePerm;
 use App\Models\User;
 use App\Models\UserRole;
-use Illuminate\Database\Seeder;
-use Faker\Generator;
 use Faker\Factory as Faker;
-use App\Models\Role;
-use App\Models\Permission;
-use App\Models\Forum;
-use App\Models\Calendar;
+use Faker\Generator;
+use Illuminate\Database\Seeder;
 
 class RoleProductionSeeder extends Seeder
 {
     private Generator $faker;
 
-    private function create($title) : Role {
-        $role = (new Role())
+    private function create($title): Role
+    {
+        $role = (new Role)
             ->fill([
                 'title' => $title,
-                'color' => fake()->hexColor
+                'color' => fake()->hexColor,
             ]);
         $role->save();
 
         return $role->refresh();
     }
 
-    private function getForumFromName($name) {
+    private function getForumFromName($name): Forum
+    {
         return (new Forum)
             ->where('title', '=', $name)
             ->first();
     }
 
-    private function getCalendarFromName($name) {
+    private function getCalendarFromName($name): Calendar
+    {
         return (new Calendar)
             ->where('title', '=', $name)
             ->first();
     }
 
-    private function givePermission(Role $role, $obj, $level) {
+    private function givePermission(Role $role, $obj, $level): void
+    {
         (new RolePerm)->create([
             'role_id' => $role['id'],
-            'permission_id' => (new Permission())
+            'permission_id' => (new Permission)
                 ->where('obj_id', '=', $obj)
                 ->where('level', '=', $level)
-                ->first()['id']
+                ->first()['id'],
         ]);
     }
 
     public function run()
     {
-        fake() = Faker::create();
+        $this->faker = Faker::create();
 
         // Padawan
-        self::create('Padawan');
+        $this->create('Padawan');
 
         // Medlem
-        $role = self::create('Medlem');
-        $forum = self::getForumFromName('Andet');
+        $role = $this->create('Medlem');
+        $forum = $this->getForumFromName('Andet');
 
-        self::givePermission($role, $forum['obj_id'], 4);
+        $this->givePermission($role, $forum['obj_id'], 4);
 
         // Nøglebærer
-        $role = self::create('Nøglebærere');
-        $forum = self::getForumFromName('Nøglebærere');
-        $calendar = self::getCalendarFromName('Nøglebærere');
+        $role = $this->create('Nøglebærere');
+        $forum = $this->getForumFromName('Nøglebærere');
+        $calendar = $this->getCalendarFromName('Nøglebærere');
 
-        self::givePermission($role, $forum['obj_id'], 4);
-        self::givePermission($role, $calendar['obj_id'], 4);
+        $this->givePermission($role, $forum['obj_id'], 4);
+        $this->givePermission($role, $calendar['obj_id'], 4);
 
         // Rude Skov Afvikler
-        $role = self::create('Rude Skov Afvikler');
-        $forum = self::getForumFromName('Rude Skov');
+        $role = $this->create('Rude Skov Afvikler');
+        $forum = $this->getForumFromName('Rude Skov');
 
-        self::givePermission($role, $forum['obj_id'], 4);
+        $this->givePermission($role, $forum['obj_id'], 4);
 
         // Amager Fælled Afvikler
-        $role = self::create('Amager Fælled Afvikler');
-        $forum = self::getForumFromName('Amager Fælled');
+        $role = $this->create('Amager Fælled Afvikler');
+        $forum = $this->getForumFromName('Amager Fælled');
 
-        self::givePermission($role, $forum['obj_id'], 4);
+        $this->givePermission($role, $forum['obj_id'], 4);
 
         // Den Magiske Skole Afvikler
-        $role = self::create('Den Magiske Skole Afvikler');
-        $forum = self::getForumFromName('Den Magiske Skole');
+        $role = $this->create('Den Magiske Skole Afvikler');
+        $forum = $this->getForumFromName('Den Magiske Skole');
 
-        self::givePermission($role, $forum['obj_id'], 4);
+        $this->givePermission($role, $forum['obj_id'], 4);
 
         // Administrator
-        $role = self::create('Administrator');
+        $role = $this->create('Administrator');
 
         // Give the admin account the administrator role
-        $userRole = (new UserRole());
+        $userRole = (new UserRole);
         $userRole->role()->associate($role);
         $userRole->user()->associate((new User)->where('super_user', '=', '1')->first());
         $userRole->save();
