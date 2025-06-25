@@ -18,7 +18,7 @@ class Resource extends JsonResource
             'id' => $this['uuid'],
             'name' => $this['name'],
             'description' => $this['description'],
-            'type' => $this['type']
+            'type' => $this['type'],
         ];
     }
 }

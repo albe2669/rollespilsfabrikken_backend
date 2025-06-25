@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Auth;
 // Helpers
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Auth\LoginRequest;
-use App\Http\Requests\API\Auth\SignupRequest;
 use App\Http\Requests\API\Auth\ResendEmailRequest;
+use App\Http\Requests\API\Auth\SignupRequest;
 use App\Http\Resources\User\User as UserResource;
 use App\Models\Role;
-use App\Models\SecurityQuestion;
 use App\Models\User;
 use App\Models\UserRole;
 use App\Notifications\API\Auth\ActivationEmail;
@@ -23,7 +22,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravolt\Avatar\Avatar;
 
-
 // Notifications
 
 // Requests
@@ -31,7 +29,6 @@ use Laravolt\Avatar\Avatar;
 // Models
 
 // Packages
-
 
 class AuthController extends Controller
 {
@@ -43,7 +40,8 @@ class AuthController extends Controller
      * @param string password
      * @return string activation_token // TODO: REMOVE THIS
      */
-    public function signup(SignupRequest $request) {
+    public function signup(SignupRequest $request)
+    {
         $request['password'] = Hash::make($request['password']);
         $request['activation_token'] = Str::random(60);
 
@@ -51,7 +49,7 @@ class AuthController extends Controller
             'username' => $request['username'],
             'email' => $request['email'],
             'password' => $request['password'],
-            'activation_token' => $request['activation_token']
+            'activation_token' => $request['activation_token'],
         ]);
 
         $avatar = (new Avatar(config('laravolt.avatar')))
@@ -60,13 +58,13 @@ class AuthController extends Controller
             ->getImageObject()
             ->encode('png');
 
-        Storage::disk('local')->put('public/avatars/' . $user->uuid . '/avatar.png', (string) $avatar);
+        Storage::disk('local')->put('public/avatars/'.$user->uuid.'/avatar.png', (string) $avatar);
 
-        $user->notify(new ActivationEmail());
+        $user->notify(new ActivationEmail);
 
         return response()->json([
             'message' => 'Successfully created user',
-            //'token' => $user->activation_token, // TODO: REMOVE BEFORE PRODUCTION
+            // 'token' => $user->activation_token, // TODO: REMOVE BEFORE PRODUCTION
         ], 201);
     }
 
@@ -76,12 +74,13 @@ class AuthController extends Controller
      * @param string token
      * @return JsonResponse
      */
-    public function activate($token) {
+    public function activate($token)
+    {
         $user = User::where('activation_token', $token)->first();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
-                'message' => 'Invalid activation token'
+                'message' => 'Invalid activation token',
             ], 404);
         }
 
@@ -104,71 +103,71 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Activated',
-            'user' => new UserResource($user)
+            'user' => new UserResource($user),
         ]);
     }
 
     /**
      * Login user
      *
-     * @param LoginRequest $request
      * @return string access_token
      * @return string token_type
      * @return string expires_at
      */
-
-    public function login(LoginRequest $request) {
+    public function login(LoginRequest $request)
+    {
         $credentials = Arr::only($request->validated(), ['email', 'password']);
 
         $user = (new User)->where('email', '=', $credentials['email'])->firstOrFail();
 
-        if (!$user['active']) {
+        if (! $user['active']) {
             return response()->json([
-                'message' => 'Kontoen er ikke aktiveret'
+                'message' => 'Kontoen er ikke aktiveret',
             ], 401);
         }
 
         if ($user['deleted_at'] !== null) {
             return response()->json([
-                'message' => 'Kontoen er bannet eller slettet'
+                'message' => 'Kontoen er bannet eller slettet',
             ], 401);
         }
 
-        if (!Auth::attempt($credentials)) {
+        if (! Auth::attempt($credentials)) {
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized',
             ], 401);
         }
 
         $user = $request->user();
 
         if ($request->device_name) {
-            $token = $user->createToken($request->device_name . ' - API token');
+            $token = $user->createToken($request->device_name.' - API token');
         } else {
             $token = $user->createToken('API token');
         }
 
         return response()->json([
             'access_token' => $token->plainTextToken,
-            'token_type' => 'Bearer'
+            'token_type' => 'Bearer',
         ], 200);
     }
 
     /**
      * Log the user out
      *
-     * @param Request $request
      * @return string message
      */
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         $request->user()->tokens()->orderBy('last_used_at', 'desc')->firstOrFail()->delete();
 
         return response()->json([
-            'message' => 'Logged out!'
+            'message' => 'Logged out!',
         ], 200);
     }
 
-    public function resendEmail(ResendEmailRequest $request) {
+    public function resendEmail(ResendEmailRequest $request)
+    {
         $email = $request->validated()['email'];
 
         $user = (new User)->where('email', '=', $email)->firstOrFail();

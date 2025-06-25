@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\API\Auth\Role;
 
-use App\Models\Role;
 use Illuminate\Foundation\Http\FormRequest;
 
 class Destroy extends FormRequest

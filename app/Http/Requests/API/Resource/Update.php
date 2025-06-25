@@ -26,7 +26,7 @@ class Update extends FormRequest
         return [
             'name' => 'string|required',
             'description' => 'string',
-            'type' => 'required|in:room,equipment'
+            'type' => 'required|in:room,equipment',
         ];
     }
 }

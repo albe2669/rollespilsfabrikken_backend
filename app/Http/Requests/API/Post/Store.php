@@ -14,7 +14,7 @@ class Store extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->can('create',[Post::class, $this->forum]);
+        return auth()->user()->can('create', [Post::class, $this->forum]);
     }
 
     /**

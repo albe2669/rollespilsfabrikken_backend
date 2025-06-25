@@ -41,7 +41,7 @@ class PasswordResetSuccess extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject("Din agangskode er nulstillet.")
+            ->subject('Din agangskode er nulstillet.')
             ->greeting('Hej')
             ->line('Din agangskode er blevet nulstillet.')
             ->line('Hvis det var dig der nulstillede din adgangskode så er dette bare en bekræftelse.')

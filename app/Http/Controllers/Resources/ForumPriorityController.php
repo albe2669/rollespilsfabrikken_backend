@@ -3,41 +3,43 @@
 namespace App\Http\Controllers\Resources;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\API\Forum\Priorities;
+use App\Http\Requests\API\Forum\Priority;
 use App\Http\Resources\Forum\Forum as ForumResource;
 use App\Models\Forum;
-use Illuminate\Http\Request;
-use App\Http\Requests\API\Forum\Priority;
-use App\Http\Requests\API\Forum\Priorities;
 
 class ForumPriorityController extends Controller
 {
-    private function setPriority(Forum $forum, $priority) : Forum {
+    private function setPriority(Forum $forum, $priority): Forum
+    {
         $forum->priority = $priority;
         $forum->save();
 
         return $forum->refresh();
     }
 
-    public function priority(Priority $request, Forum $forum) {
+    public function priority(Priority $request, Forum $forum)
+    {
         self::setPriority($forum, $request->validated()['priority']);
 
         return response()->json([
             'message' => 'success',
-            'forum' => new ForumResource(self::setPriority($forum, $request->validated()['priority']))
+            'forum' => new ForumResource(self::setPriority($forum, $request->validated()['priority'])),
         ], 200);
     }
 
-    public function priorities(Priorities $request) {
+    public function priorities(Priorities $request)
+    {
         $data = $request->validated();
-        $forums = array();
+        $forums = [];
 
         foreach ($data as $element) {
             $forum = Forum::whereUuid($element['id'])->first();
 
-            if (!$forum) {
+            if (! $forum) {
                 return response()->json([
-                    'message' => 'Could not find forum with id: ' . $element['id'],
-                    'input' => $element
+                    'message' => 'Could not find forum with id: '.$element['id'],
+                    'input' => $element,
                 ], 404);
             }
 
@@ -50,7 +52,7 @@ class ForumPriorityController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'forums' => ForumResource::collection($forums)
+            'forums' => ForumResource::collection($forums),
         ], 200);
     }
 }

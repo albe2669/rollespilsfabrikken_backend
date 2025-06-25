@@ -2,10 +2,7 @@
 
 namespace App\Http\Resources\Event;
 
-use App\Http\Resources\Calendar\CalendarWithoutDelete;
-use App\Http\Resources\Resource\Resource as ResourceResource;
 use App\Http\Resources\User\User as UserResource;
-use App\Models\Calendar;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -22,6 +19,7 @@ class EventCensored extends JsonResource
     {
         $event = (new \App\Models\Event)->find($this['id']);
         $end = Carbon::createFromTimestamp($this['repeat_end'])->addDays(-1)->format('Y-m-d\TH:i:s.v\Z');
+
         return [
             'id' => $this['uuid'],
             'start' => $this['start'],

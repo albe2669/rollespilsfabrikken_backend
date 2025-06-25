@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Support\Casts\EfficientUuid;;
+use Dyrynda\Database\Support\Casts\EfficientUuid;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -28,7 +28,7 @@ class Obj extends Model
     ];
 
     protected $fillable = [
-        'type'
+        'type',
     ];
 
     public function getRouteKeyName()
@@ -36,18 +36,20 @@ class Obj extends Model
         return 'uuid';
     }
 
-    public function permissions() {
-        return $this->hasMany('App\Models\Permission');
+    public function permissions()
+    {
+        return $this->hasMany(Permission::class);
     }
 
-    public function obj() {
+    public function obj()
+    {
         switch ($this->type) {
             case 'forum':
-                return $this->hasOne('App\Models\Forum');
+                return $this->hasOne(Forum::class);
                 break;
 
             case 'calendar':
-                return $this->hasOne('App\Models\Calendar');
+                return $this->hasOne(Calendar::class);
                 break;
 
             default:

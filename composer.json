@@ -26,13 +26,18 @@
         "laravel/pint": "^1.22",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^v8.8",
-        "phpunit/phpunit": "^12.1",
-        "roave/security-advisories": "dev-latest"
+        "pestphp/pest": "^3.7",
+        "pestphp/pest-plugin-laravel": "^3.1",
+        "roave/security-advisories": "dev-latest",
+        "friendsofphp/php-cs-fixer": "^3.75"
     },
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     },
     "extra": {
         "laravel": {

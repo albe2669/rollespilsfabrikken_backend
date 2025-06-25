@@ -3,31 +3,30 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Role\RoleCollection;
+use App\Http\Requests\API\Auth\RolePerm\Add;
+use App\Http\Requests\API\Auth\RolePerm\CalendarAdd;
+use App\Http\Requests\API\Auth\RolePerm\CalendarIndex;
+use App\Http\Requests\API\Auth\RolePerm\ForumAdd;
+use App\Http\Requests\API\Auth\RolePerm\ForumIndex;
+use App\Http\Requests\API\Auth\RolePerm\MultiAdd;
+use App\Http\Requests\API\Auth\RolePerm\MultiDelete;
+use App\Http\Resources\Permission\PermissionWithoutParent;
 use App\Http\Resources\Role\RoleWithPermissions;
 use App\Models\Calendar;
 use App\Models\Forum;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\RolePerm;
-use Illuminate\Http\Request;
-use App\Http\Requests\API\Auth\RolePerm\Add;
-use App\Http\Requests\API\Auth\RolePerm\MultiAdd;
-use App\Http\Requests\API\Auth\RolePerm\MultiDelete;
-use App\Http\Requests\API\Auth\RolePerm\CalendarAdd;
-use App\Http\Requests\API\Auth\RolePerm\ForumAdd;
-use App\Http\Requests\API\Auth\RolePerm\CalendarIndex;
-use App\Http\Requests\API\Auth\RolePerm\ForumIndex;
-use App\Http\Resources\Permission\PermissionWithoutParent;
 
 class PermissionRoleController extends Controller
 {
     // Get or create roleperm
-    private function createRolePerm(Permission $permission, Role $role) {
+    private function createRolePerm(Permission $permission, Role $role)
+    {
         $rolePerm = (new RolePerm)
             ->where([
                 ['permission_id', '=', $permission['id']],
-                ['role_id', '=', $role['id']]
+                ['role_id', '=', $role['id']],
             ])->first();
 
         if ($rolePerm === null) {
@@ -39,78 +38,87 @@ class PermissionRoleController extends Controller
         }
     }
 
-    private function deleteRolePerm(Permission $permission, Role $role) {
+    private function deleteRolePerm(Permission $permission, Role $role)
+    {
         (new RolePerm)
             ->where([
                 ['permission_id', '=', $permission['id']],
-                ['role_id', '=', $role['id']]
+                ['role_id', '=', $role['id']],
             ])->get()
             ->each(function (RolePerm $rolePerm, $key) {
                 $rolePerm->delete();
+
                 return true;
             });
     }
 
-    private function getRolePermsWithObjId(Role $role, $obj) {
+    private function getRolePermsWithObjId(Role $role, $obj)
+    {
         return $role
             ->permissions()
             ->where('obj_id', '=', $obj)
             ->get();
     }
 
-    private function filterObjPerms($obj, $perms) {
+    private function filterObjPerms($obj, $perms)
+    {
         return (new Permission)
             ->where('obj_id', '=', $obj)
             ->whereNotIn('id', $perms)
             ->get();
     }
 
-    public function calendarIndex(CalendarIndex $request, Role $role, Calendar $calendar) {
+    public function calendarIndex(CalendarIndex $request, Role $role, Calendar $calendar)
+    {
         $perms = $this->getRolePermsWithObjId($role, $calendar['obj_id']);
 
         return response()->json([
             'message' => 'success',
             'permissions_enabled' => PermissionWithoutParent::collection(
-                $perms
+                $perms,
             ),
             'permissions_disabled' => PermissionWithoutParent::collection(
-                self::filterObjPerms($calendar['obj_id'], $perms->pluck('id'))
-            )
+                self::filterObjPerms($calendar['obj_id'], $perms->pluck('id')),
+            ),
         ]);
     }
 
-    public function forumIndex(ForumIndex $request, Role $role, Forum $forum) {
+    public function forumIndex(ForumIndex $request, Role $role, Forum $forum)
+    {
         $perms = $this->getRolePermsWithObjId($role, $forum['obj_id']);
 
         return response()->json([
             'message' => 'success',
             'permissions_enabled' => PermissionWithoutParent::collection(
-                $perms
+                $perms,
             ),
             'permissions_disabled' => PermissionWithoutParent::collection(
-                self::filterObjPerms($forum['obj_id'], $perms)
-            )
+                self::filterObjPerms($forum['obj_id'], $perms),
+            ),
         ]);
     }
 
-    public function add(Permission $permission, Role $role) {
+    public function add(Permission $permission, Role $role)
+    {
         self::createRolePerm($permission, $role);
 
         return response()->json([
             'message' => 'success',
-            'role' => new RoleWithPermissions($role)
+            'role' => new RoleWithPermissions($role),
         ]);
     }
 
-    public function delete(Permission $permission, Role $role) {
+    public function delete(Permission $permission, Role $role)
+    {
         self::deleteRolePerm($permission, $role);
 
         return response()->json([
-            'message' => 'success'
+            'message' => 'success',
         ]);
     }
 
-    public function multiAdd(MultiAdd $request, Role $role) {
+    public function multiAdd(MultiAdd $request, Role $role)
+    {
         $perms = $request->validated()['permissions'];
 
         foreach ($perms as $perm) {
@@ -123,11 +131,12 @@ class PermissionRoleController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'role' => new RoleWithPermissions($role)
+            'role' => new RoleWithPermissions($role),
         ]);
     }
 
-    public function multiDelete(MultiDelete $request, Role $role) {
+    public function multiDelete(MultiDelete $request, Role $role)
+    {
         $perms = $request->validated()['permissions'];
 
         foreach ($perms as $perm) {
@@ -140,11 +149,12 @@ class PermissionRoleController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'role' => new RoleWithPermissions($role)
+            'role' => new RoleWithPermissions($role),
         ]);
     }
 
-    public function calendarAdd(CalendarAdd $request, Calendar $calendar, $level, Role $role) {
+    public function calendarAdd(CalendarAdd $request, Calendar $calendar, $level, Role $role)
+    {
         $permission = $calendar
             ->permissions()
             ->where('level', '=', $level)
@@ -154,11 +164,12 @@ class PermissionRoleController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'role' => new RoleWithPermissions($role)
+            'role' => new RoleWithPermissions($role),
         ]);
     }
 
-    public function forumAdd(ForumAdd $request, Forum $forum, $level, Role $role) {
+    public function forumAdd(ForumAdd $request, Forum $forum, $level, Role $role)
+    {
         $permission = $forum
             ->permissions()
             ->where('level', '=', $level)
@@ -168,11 +179,12 @@ class PermissionRoleController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'role' => new RoleWithPermissions($role)
+            'role' => new RoleWithPermissions($role),
         ]);
     }
 
-    public function calendarDelete(CalendarAdd $request, Calendar $calendar, $level, Role $role) {
+    public function calendarDelete(CalendarAdd $request, Calendar $calendar, $level, Role $role)
+    {
         $permission = $calendar
             ->permissions()
             ->where('level', '=', $level)
@@ -181,11 +193,12 @@ class PermissionRoleController extends Controller
         self::deleteRolePerm($permission, $role);
 
         return response()->json([
-            'message' => 'success'
+            'message' => 'success',
         ]);
     }
 
-    public function forumDelete(ForumAdd $request, Forum $forum, $level, Role $role) {
+    public function forumDelete(ForumAdd $request, Forum $forum, $level, Role $role)
+    {
         $permission = $forum
             ->permissions()
             ->where('level', '=', $level)
@@ -194,24 +207,28 @@ class PermissionRoleController extends Controller
         self::deleteRolePerm($permission, $role);
 
         return response()->json([
-            'message' => 'success'
+            'message' => 'success',
         ]);
     }
 
     // These functions dont actually do anything they just take the arguments and give them in the right order, to allow multiple routes
-    public function roleAdd(Add $request, Role $role, Permission $permission) {
+    public function roleAdd(Add $request, Role $role, Permission $permission)
+    {
         return self::add($permission, $role);
     }
 
-    public function permissionAdd(Add $request, Permission $permission, Role $role) {
+    public function permissionAdd(Add $request, Permission $permission, Role $role)
+    {
         return self::add($permission, $role);
     }
 
-    public function roleDelete(Add $request, Role $role, Permission $permission) {
+    public function roleDelete(Add $request, Role $role, Permission $permission)
+    {
         return self::delete($permission, $role);
     }
 
-    public function permissionDelete(Add $request, Permission $permission, Role $role) {
+    public function permissionDelete(Add $request, Permission $permission, Role $role)
+    {
         return self::delete($permission, $role);
     }
 }

@@ -26,7 +26,7 @@ class MultiDelete extends FormRequest
     {
         return [
             'permissions' => 'required|array',
-            'permissions.*' => 'required|string'
+            'permissions.*' => 'required|string',
         ];
     }
 }

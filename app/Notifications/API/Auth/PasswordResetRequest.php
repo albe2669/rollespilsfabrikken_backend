@@ -15,7 +15,6 @@ class PasswordResetRequest extends Notification implements ShouldQueue
 
     /**
      * Create a new notification instance.
-     * @param string $token
      */
     public function __construct(string $token)
     {
@@ -42,8 +41,9 @@ class PasswordResetRequest extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $url = url('/#/nulstil-password?token='.$this->token);
+
         return (new MailMessage)
-            ->subject("Nulstil din adgangskode")
+            ->subject('Nulstil din adgangskode')
             ->greeting('Hej')
             ->line('Du modtager denne mail da vi har modtaget en anmodning om at nulstille din adgangskode')
             ->action('Nulstil adgangskode: ', url($url))

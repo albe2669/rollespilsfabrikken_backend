@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\Permission;
 
-use App\Http\Resources\Universal\ParentResource;
 use App\Http\Resources\Role\Role as RoleResource;
+use App\Http\Resources\Universal\ParentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PermissionWithRoles extends JsonResource

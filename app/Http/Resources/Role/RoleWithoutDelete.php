@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Role;
 
-use App\Http\Resources\Permission\PermissionWithoutDelete as Permission;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class RoleWithoutDelete extends JsonResource
@@ -19,7 +18,7 @@ class RoleWithoutDelete extends JsonResource
             'id' => $this->uuid,
             'title' => $this->title,
             'color' => $this->color,
-            'show' => $this->show
-    	];
+            'show' => $this->show,
+        ];
     }
 }

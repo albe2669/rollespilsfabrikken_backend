@@ -14,6 +14,7 @@ class ModifyPostFiles extends Migration
     public function up()
     {
         Schema::table('post_files', function (Blueprint $table) {
+            $table->dropIndex('post_files_uuid_index');
             $table->dropColumn(['uuid', 'name', 'saved_name', 'file_size']);
 
             $table->unsignedBigInteger('file_id')->index();

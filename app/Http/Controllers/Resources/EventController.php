@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\Resources;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Helpers\Constants\EventConstants;
+use App\Http\Controllers\Helpers\EventHelpers;
+use App\Http\Requests\API\Event\All;
 use App\Http\Requests\API\Event\Destroy;
 use App\Http\Requests\API\Event\Index;
 use App\Http\Requests\API\Event\Show;
 use App\Http\Requests\API\Event\Store;
-use App\Http\Requests\API\Event\All;
 use App\Http\Requests\API\Event\Update;
+use App\Http\Resources\Event\Event as EventJsonResource;
+use App\Http\Resources\Event\EventCensored;
+use App\Http\Resources\Event\EventWithUser;
 use App\Models\Calendar;
 use App\Models\Event;
 use App\Models\EventMeta;
@@ -16,13 +21,6 @@ use App\Models\EventSerie;
 use App\Models\Resource;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use App\Models\EventResource;
-use App\Http\Controllers\Helpers\Constants\EventConstants;
-use App\Http\Resources\Event\EventWithUser as EventWithUser;
-use App\Http\Resources\Event\Event as EventJsonResource;
-use App\Http\Resources\Event\EventCensored;
-use App\Http\Controllers\Helpers\EventHelpers;
-use Illuminate\Support\Arr;
 
 class EventController extends Controller
 {
@@ -30,8 +28,6 @@ class EventController extends Controller
      * Display a listing of the resource.
      * Url : /api/forum/{forum}/posts
      *
-     * @param All $request
-     * @param Calendar $calendar
      * @return JsonResponse
      */
     public function all(All $request, Calendar $calendar)
@@ -40,14 +36,14 @@ class EventController extends Controller
 
         $calendars = EventHelpers::getCalendars(auth()->user());
 
-        list($startDate, $endDate) = EventHelpers::parseRequest($request);
+        [$startDate, $endDate] = EventHelpers::parseRequest($request);
 
-       return response()->json([
+        return response()->json([
             'message' => 'success',
             'data' => EventWithUser::collection(
                 EventHelpers::getEventsInRange($startDate, $endDate, $calendars, [])
                     ->where('start_timestamp', '>=', $startDate->timestamp)
-                    ->where('end_timestamp', '<=', $endDate->timestamp)
+                    ->where('end_timestamp', '<=', $endDate->timestamp),
             ),
         ], 200);
     }
@@ -55,13 +51,11 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Index $request
-     * @param Calendar $calendar
      * @return JsonResponse
      */
     public function index(Index $request, Calendar $calendar)
     {
-        list($startDate, $endDate) = EventHelpers::parseRequest($request);
+        [$startDate, $endDate] = EventHelpers::parseRequest($request);
 
         $totalEvents = [];
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
@@ -69,13 +63,13 @@ class EventController extends Controller
 
             $events = EventHelpers::getEventQuery($calendar->events()->getQuery(), true, $timestamp)
                 ->get()
-                ->each(function($event, $item) use ($timestamp) {
+                ->each(function ($event, $item) use ($timestamp) {
                     EventHelpers::convertEvent($event, $timestamp);
                 });
 
             $oneTime = EventHelpers::getEventQuery($calendar->events()->getQuery(), false, $timestamp)
                 ->get()
-                ->each(function($event, $item) use ($timestamp) {
+                ->each(function ($event, $item) use ($timestamp) {
                     EventHelpers::convertEvent($event, $timestamp);
                 });
 
@@ -88,7 +82,7 @@ class EventController extends Controller
                 collect($totalEvents)
                     ->flatten()
                     ->where('start_timestamp', '>=', $startDate->timestamp)
-                    ->where('end_timestamp', '<=', $endDate->timestamp)
+                    ->where('end_timestamp', '<=', $endDate->timestamp),
             ),
         ], 200);
     }
@@ -96,9 +90,6 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Show $request
-     * @param Calendar $calendar
-     * @param Event $event
      * @return JsonResponse
      */
     public function show(Show $request, Calendar $calendar, Event $event)
@@ -110,7 +101,7 @@ class EventController extends Controller
 
         if ($event == false) {
             return response()->json([
-                'message' => 'There is no instance of this event on that date'
+                'message' => 'There is no instance of this event on that date',
             ], 404);
         }
 
@@ -123,8 +114,6 @@ class EventController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Store $request
-     * @param Calendar $calendar
      * @return JsonResponse
      */
     public function store(Store $request, Calendar $calendar)
@@ -132,18 +121,18 @@ class EventController extends Controller
         // Parse the request data
         $data = $request->validated();
 
-        list(
+        [
             $start,
             $end,
             $data,
             $metaData,
             $resources,
-            $warnings
-        ) = EventHelpers::parseData($data, $calendar);
+            $warnings,
+        ] = EventHelpers::parseData($data, $calendar);
 
         // Make sure the start is not after end date
         if ($start->isAfter($end)) {
-            return response()->json( [
+            return response()->json([
                 'message' => 'An events start date cant be after its end',
             ], 401);
         }
@@ -158,7 +147,7 @@ class EventController extends Controller
         }
 
         // Create the new event
-        $event = (new Event())
+        $event = (new Event)
             ->fill($data);
 
         // Associate with the creating user
@@ -167,14 +156,14 @@ class EventController extends Controller
             ->associate(auth()->user());
 
         // Create a new series and associate with the event
-        $series = (new EventSerie())->create();
+        $series = (new EventSerie)->create();
         $event->series()->associate($series);
 
         // Save the event
         $calendar->events()->save($event);
 
         // Fill the event meta data
-        $eventMeta = (new EventMeta())->fill($metaData);
+        $eventMeta = (new EventMeta)->fill($metaData);
 
         // Save and associate the metadata with the event
         $event->refresh()->meta()->save($eventMeta);
@@ -189,8 +178,9 @@ class EventController extends Controller
                     collect($event)
                         ->merge($eventMeta->refresh())
                         ->toArray(),
-                    $start->timestamp)
-            )
+                    $start->timestamp,
+                ),
+            ),
         ];
 
         if (count($warnings) > 0) {
@@ -203,9 +193,6 @@ class EventController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Update $request
-     * @param Calendar $calendar
-     * @param Event $event
      * @return JsonResponse
      */
     public function update(Update $request, Calendar $calendar, Event $event)
@@ -213,18 +200,18 @@ class EventController extends Controller
         // Retrieve the data
         $data = $request->validated();
 
-        list(
+        [
             $start,
             $end,
             $data,
             $metaData,
             $resources,
-            $warnings
-        ) = EventHelpers::parseData($data, $calendar);
+            $warnings,
+        ] = EventHelpers::parseData($data, $calendar);
 
         // Make sure the start is not after end date
         if ($start->isAfter($end)) {
-            return response()->json( [
+            return response()->json([
                 'message' => 'An events start date cant be after its end',
             ], 401);
         }
@@ -241,8 +228,8 @@ class EventController extends Controller
 
             EventHelpers::updateEventResources($event, $resources);
 
-        // Update the series
-        } else if (isset($data['recurrence']['series']) && ($data['recurrence']['series'] === true)) {
+            // Update the series
+        } elseif (isset($data['recurrence']['series']) && ($data['recurrence']['series'] === true)) {
             // Get all the events in the series
             $series = $event->series;
 
@@ -264,19 +251,19 @@ class EventController extends Controller
                 EventHelpers::updateEventResources($event, $resources);
             }
 
-        }else if (isset($data['recurrence']['apply_to_all']) && ($data['recurrence']['apply_to_all'] === true)) {
+        } elseif (isset($data['recurrence']['apply_to_all']) && ($data['recurrence']['apply_to_all'] === true)) {
             // Update the original event
             $event->update($data);
 
             // Update the recurrence of the current branch of the series
             $originalEventMeta->update($metaData);
-        } else if (isset($data['recurrence']['only_this']) && ($data['recurrence']['only_this'] === true)){
+        } elseif (isset($data['recurrence']['only_this']) && ($data['recurrence']['only_this'] === true)) {
             // Check if there is an event instance on the given date
             $event = EventHelpers::checkForEventInstance($event, $start->copy()->startOfDay()->timestamp);
 
             if ($event == false) {
                 return response()->json([
-                    'message' => 'There is no instance of this event on that date'
+                    'message' => 'There is no instance of this event on that date',
                 ], 404);
             }
 
@@ -288,18 +275,18 @@ class EventController extends Controller
             $eventData = [
                 'repeat_start' => $start->copy()->startOfDay()->timestamp + $originalEventMeta['repeat_interval'],
                 'repeat_interval' => $originalEventMeta['repeat_interval'],
-                'repeat_end' => $originalEventMeta['repeat_end']
+                'repeat_end' => $originalEventMeta['repeat_end'],
             ];
 
             // Fill in the data
-            $meta = (new EventMeta())->fill($eventData);
+            $meta = (new EventMeta)->fill($eventData);
 
             // Create the data
             $event = (new Event)->fill([
                 'title' => $event['title'],
                 'description' => $event['description'],
                 'start' => Carbon::createFromTimestamp($event['start_timestamp'])->toTimeString(),
-                'event_length' => $event['event_length']
+                'event_length' => $event['event_length'],
             ]);
 
             // Associate
@@ -314,11 +301,11 @@ class EventController extends Controller
             $eventData = [
                 'repeat_start' => $start->copy()->startOfDay()->timestamp,
                 'repeat_interval' => 0,
-                'repeat_end' => null
+                'repeat_end' => null,
             ];
 
             // Fill in its meta
-            $meta = (new EventMeta())->fill($eventData);
+            $meta = (new EventMeta)->fill($eventData);
 
             // Fill in the new events data
             $event = (new Event)->fill($data);
@@ -337,7 +324,7 @@ class EventController extends Controller
             // This will split the recurrence series into 2.
             // It will end the original and create a new one.
             // Create a new event, aka the split
-            $event = (new Event())
+            $event = (new Event)
                 ->fill($data);
 
             // Assign it to the user
@@ -358,7 +345,7 @@ class EventController extends Controller
             $originalEventMeta->save();
 
             // Create a new recurrence series and save it to the new event
-            $eventMeta = (new EventMeta())->fill($metaData);
+            $eventMeta = (new EventMeta)->fill($metaData);
             $event->refresh()->meta()->save($eventMeta);
 
             // Set the new events resources to be the ones given in the new event
@@ -372,7 +359,7 @@ class EventController extends Controller
 
         $response = [
             'message' => 'success',
-            'event' => new EventJsonResource(collect($event)->merge($event->meta)->toArray())
+            'event' => new EventJsonResource(collect($event)->merge($event->meta)->toArray()),
         ];
 
         if (count($warnings) > 0) {
@@ -385,9 +372,6 @@ class EventController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Destroy $request
-     * @param Calendar $calendar
-     * @param Event $event
      * @return JsonResponse
      */
     public function destroy(Destroy $request, Calendar $calendar, Event $event)
@@ -409,26 +393,26 @@ class EventController extends Controller
             $event->meta->delete();
 
             // Update the series
-        } else if (isset($data['series']) && ($data['series'] === true)) {
+        } elseif (isset($data['series']) && ($data['series'] === true)) {
             $series = $event->series;
             $events = $series->events;
 
-            $events->each(function(Event $event, $item) {
+            $events->each(function (Event $event, $item) {
                 $event->meta->delete();
                 $event->delete();
             });
 
             $series->delete();
-        } else if (isset($data['apply_to_all']) && ($data['apply_to_all'] === true)) {
+        } elseif (isset($data['apply_to_all']) && ($data['apply_to_all'] === true)) {
             $event->delete();
             $event->meta->delete();
-        } else if (isset($data['only_this']) && ($data['only_this'] === true)){
+        } elseif (isset($data['only_this']) && ($data['only_this'] === true)) {
             // Check if there is an event instance on the given date
             $event = EventHelpers::checkForEventInstance($event, $date->copy()->startOfDay()->timestamp);
 
             if ($event == false) {
                 return response()->json([
-                    'message' => 'There is no instance of this event on that date'
+                    'message' => 'There is no instance of this event on that date',
                 ], 404);
             }
 
@@ -436,14 +420,14 @@ class EventController extends Controller
             $metaData = [
                 'repeat_start' => $date->startOfDay()->timestamp + $meta['repeat_interval'],
                 'repeat_interval' => $meta['repeat_interval'],
-                'repeat_end' => $meta['repeat_end']
+                'repeat_end' => $meta['repeat_end'],
             ];
 
             $meta['repeat_end'] = $date->startOfDay()->timestamp;
             $meta->save();
 
             // Create a new meta
-            $meta = (new EventMeta())->fill($metaData);
+            $meta = (new EventMeta)->fill($metaData);
 
             // Create and save a new event that starts right after the one just deleted
             $newEvent = (new Event)->fill($event->only(['title', 'description', 'start', 'event_length']));
@@ -458,50 +442,50 @@ class EventController extends Controller
 
             if ($event == false) {
                 return response()->json([
-                    'message' => 'There is no instance of this event on that date'
+                    'message' => 'There is no instance of this event on that date',
                 ], 404);
             }
-
 
             $meta['repeat_end'] = $date->startOfDay()->timestamp;
             $meta->save();
         }
 
         return response()->json([
-            'message' => 'success'
+            'message' => 'success',
         ], 200);
     }
 
-    public function check(Store $request, Calendar $calendar) {
+    public function check(Store $request, Calendar $calendar)
+    {
         // Parse the request data
         $data = $request->validated();
-        list(
+        [
             $start,
             $end,
             $data,
             $metaData,
             $resources,
-            $warnings
-            ) = EventHelpers::parseData($data, $calendar);
+            $warnings,
+        ] = EventHelpers::parseData($data, $calendar);
 
-        $errors = array();
+        $errors = [];
 
         // Make sure the start is not after end date
         if ($start->isAfter($end)) {
             $errors[] = [
-                'message' => 'An events start date cant be after its end'
+                'message' => 'An events start date cant be after its end',
             ];
         }
 
         if ($metaData['repeat_end'] > Carbon::createFromTimestamp($data['start_timestamp'])->addYears(2)->timestamp) {
             $errors[] = [
-                'message' => 'An event cant repeat for more than 2 years'
+                'message' => 'An event cant repeat for more than 2 years',
             ];
         }
 
         if ($data['event_length'] > $metaData['repeat_interval'] && $metaData['repeat_interval'] != 0) {
             $errors[] = [
-                'message' => 'An event cant be longer than its recurring interval'
+                'message' => 'An event cant be longer than its recurring interval',
             ];
         }
 
@@ -521,10 +505,10 @@ class EventController extends Controller
 
         foreach ($events as $event) {
             // Determine if the events overlap by checking if the events do not overlap
-            if (!($event['end_timestamp'] <= $start->timestamp || $event['start_timestamp'] >= $end->timestamp)) {
+            if (! ($event['end_timestamp'] <= $start->timestamp || $event['start_timestamp'] >= $end->timestamp)) {
                 $warnings[] = [
                     'message' => 'Event overlaps with another event',
-                    'event' => new EventWithUser($event)
+                    'event' => new EventWithUser($event),
                 ];
             }
         }
@@ -539,7 +523,7 @@ class EventController extends Controller
                     $warning = [
                         'message' => 'This resource is already booked',
                         'resource' => new \App\Http\Resources\Resource\Resource($resource),
-                        'bookings' => []
+                        'bookings' => [],
                     ];
 
                     foreach ($events as $event) {
@@ -560,7 +544,7 @@ class EventController extends Controller
             return response()->json([
                 'message' => 'There were errors/warnings',
                 'warnings' => $warnings,
-                'errors' => $errors
+                'errors' => $errors,
             ], 400);
         } else {
             return response()->json([

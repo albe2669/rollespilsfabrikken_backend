@@ -30,7 +30,9 @@ use Laravel\Scout\Searchable;
  */
 class Event extends Model
 {
-    use Searchable, GeneratesUuid, HasFactory;
+    use GeneratesUuid;
+    use HasFactory;
+    use Searchable;
 
     protected $casts = [
         'uuid' => EfficientUuid::class,
@@ -48,7 +50,8 @@ class Event extends Model
         return 'uuid';
     }
 
-    public function toSearchableArray() {
+    public function toSearchableArray()
+    {
         $array = $this->toArray();
 
         $array = Arr::only($array, [
@@ -56,33 +59,39 @@ class Event extends Model
             'title',
             'description',
             'start',
-            'end'
+            'end',
         ]);
 
         return $array;
     }
 
-    public function series() {
-        return $this->belongsTo('App\Models\EventSerie');
+    public function series()
+    {
+        return $this->belongsTo(EventSerie::class);
     }
 
-    public function calendar() {
-        return $this->belongsTo('App\Models\Calendar');
+    public function calendar()
+    {
+        return $this->belongsTo(Calendar::class);
     }
 
-    public function getTableColumns() {
+    public function getTableColumns()
+    {
         return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
     }
 
-    public function user() {
-        return $this->belongsTo('App\Models\User');
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
-    public function meta()  {
+    public function meta()
+    {
         return $this->hasOne(EventMeta::class);
     }
 
-    public function resources() {
-        return $this->hasManyThrough('App\Models\Resource', 'App\Models\EventResource', 'event_id', 'id', 'id', 'resource_id');
+    public function resources()
+    {
+        return $this->hasManyThrough(Resource::class, EventResource::class, 'event_id', 'id', 'id', 'resource_id');
     }
 }

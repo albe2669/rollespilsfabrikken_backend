@@ -25,7 +25,7 @@ class UpdateUsername extends FormRequest
     public function rules()
     {
         return [
-            'username' => 'string|required|confirmed'
+            'username' => 'string|required|confirmed',
         ];
     }
 }

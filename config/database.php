@@ -43,6 +43,12 @@ return [
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
+        'testing' => [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'foreign_key_constraints' => true,
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -52,7 +58,7 @@ return [
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
-            'timezone'  => '+02:00',
+            'timezone' => '+02:00',
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
@@ -61,7 +67,8 @@ return [
             'engine' => null,
             'options' => [
                 PDO::ATTR_EMULATE_PREPARES => true,
-                ...(extension_loaded('pdo_mysql') ? array_filter([
+                ...(
+                    extension_loaded('pdo_mysql') ? array_filter([
                         PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
                     ]) : []
                 ),

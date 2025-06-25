@@ -2,10 +2,9 @@
 
 namespace App\Http\Resources\Universal;
 
-use App\Models\Post;
-use App\Models\Comment;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
+
 class ParentResource extends JsonResource
 {
     /**
@@ -21,7 +20,7 @@ class ParentResource extends JsonResource
             'name' => $this->title,
             'description' => $this->description,
             'colour' => $this->colour,
-            'type' =>  mb_strtolower(Str::replaceFirst('App\\Models\\','', get_class($this->resource)))
+            'type' => mb_strtolower(Str::replaceFirst('App\\Models\\', '', get_class($this->resource))),
         ];
     }
 }

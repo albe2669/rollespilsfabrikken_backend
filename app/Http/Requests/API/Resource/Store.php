@@ -14,7 +14,7 @@ class Store extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->can('create', Resource::class);;
+        return auth()->user()->can('create', Resource::class);
     }
 
     /**
@@ -27,7 +27,7 @@ class Store extends FormRequest
         return [
             'name' => 'string|required',
             'description' => 'string',
-            'type' => 'required|in:room,equipment'
+            'type' => 'required|in:room,equipment',
         ];
     }
 }

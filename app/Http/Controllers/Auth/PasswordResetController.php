@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Auth\Reset\RequestResetRequest;
 use App\Http\Requests\API\Auth\Reset\ResetRequest;
+use App\Http\Resources\User\User as UserResource;
 use App\Models\PasswordReset;
 use App\Models\User;
 use App\Notifications\API\Auth\PasswordResetRequest;
@@ -12,9 +13,7 @@ use App\Notifications\API\Auth\PasswordResetSuccess;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Resources\User\User as UserResource;
 use Illuminate\Support\Str;
 
 class PasswordResetController extends Controller
@@ -22,7 +21,6 @@ class PasswordResetController extends Controller
     /**
      * Create token password reset
      *
-     * @param RequestResetRequest $request
      * @return JsonResponse [string] message
      */
     public function create(RequestResetRequest $request)
@@ -33,14 +31,15 @@ class PasswordResetController extends Controller
             ['email' => $user->email],
             [
                 'email' => $user->email,
-                'token' => Str::random(60)
-            ]
+                'token' => Str::random(60),
+            ],
         );
-        if ($user && $passwordReset)
+        if ($user && $passwordReset) {
             $user->notify(new PasswordResetRequest($passwordReset->token));
+        }
 
         return response()->json([
-            'message' => 'Email med link sendt!'
+            'message' => 'Email med link sendt!',
         ], 200);
     }
 
@@ -49,6 +48,7 @@ class PasswordResetController extends Controller
      *
      * @param  [string] $token
      * @return JsonResponse [string] message
+     *
      * @throws Exception
      */
     public function find($token)
@@ -59,7 +59,7 @@ class PasswordResetController extends Controller
             $passwordReset->delete();
 
             return response()->json([
-                'message' => 'Linket er udløbet'
+                'message' => 'Linket er udløbet',
             ], 498);
         }
 
@@ -69,8 +69,8 @@ class PasswordResetController extends Controller
     /**
      * Reset password
      *
-     * @param ResetRequest $request
      * @return JsonResponse [string] message
+     *
      * @throws Exception
      */
     public function reset(ResetRequest $request)
@@ -78,20 +78,20 @@ class PasswordResetController extends Controller
         $data = $request->validated();
         $passwordReset = PasswordReset::where([
             ['token', $data['token']],
-            ['email', $data['email']]
+            ['email', $data['email']],
         ])->firstOrFail();
 
         $user = User::where('email', $passwordReset->email)->firstOrFail();
 
         $user->password = Hash::make($data['password']);
         $user->save();
-        $user->notify(new PasswordResetSuccess());
+        $user->notify(new PasswordResetSuccess);
 
         $passwordReset->delete();
 
         return response()->json([
             'message' => 'success',
-            'user' => new UserResource($user->refresh())
+            'user' => new UserResource($user->refresh()),
         ]);
     }
 }

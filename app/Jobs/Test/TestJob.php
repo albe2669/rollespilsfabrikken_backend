@@ -12,20 +12,21 @@ use Illuminate\Support\Facades\Log;
 
 class TestJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
-    public string $title = "Job test";
-    public string $description = "Job test body";
+    public string $title = 'Job test';
+
+    public string $description = 'Job test body';
 
     /**
      * Create a new job instance.
-     *
-     * @param $title
-     * @param $description
      */
     public function __construct($title, $description)
     {
-        Log::debug("Constructing");
+        Log::debug('Constructing');
         $this->title = $title;
         $this->description = $description;
     }
@@ -37,11 +38,11 @@ class TestJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::debug("Handling");
-        (new Calendar())->create([
+        Log::debug('Handling');
+        (new Calendar)->create([
             'title' => $this->title,
             'description' => $this->description,
-            'obj_id' => 90000
+            'obj_id' => 90000,
         ]);
     }
 }

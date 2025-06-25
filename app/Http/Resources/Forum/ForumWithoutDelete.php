@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources\Forum;
 
-use App\Models\Post;
-use App\Models\Comment;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ForumWithoutDelete extends JsonResource

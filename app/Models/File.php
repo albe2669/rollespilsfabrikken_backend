@@ -32,7 +32,7 @@ class File extends Model
     protected $fillable = [
         'name',
         'saved_name',
-        'file_size'
+        'file_size',
     ];
 
     public function getRouteKeyName()
@@ -40,11 +40,13 @@ class File extends Model
         return 'uuid';
     }
 
-    public function posts() {
-        return $this->hasManyThrough('App\Models\Post', 'App\Models\PostFile');
+    public function posts()
+    {
+        return $this->hasManyThrough(Post::class, PostFile::class);
     }
 
-    public function comments() {
-        return $this->hasManyThrough('App\Models\Comment', 'App\Models\PostFile');
+    public function comments()
+    {
+        return $this->hasManyThrough(Comment::class, CommentFile::class);
     }
 }

@@ -24,7 +24,7 @@ class AvatarUpload extends FormRequest
     public function rules()
     {
         return [
-            'avatar' => 'required|image'
+            'avatar' => 'required|image',
         ];
     }
 }

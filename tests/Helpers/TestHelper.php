@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Tests\Helpers;
-
 
 use App\Models\Role;
 use App\Models\User;
@@ -15,15 +13,15 @@ class TestHelper
 
         (new \App\Models\RolePerm)->create([
             'role_id' => $role['id'],
-            'permission_id' => (new \App\Models\Permission())
+            'permission_id' => (new \App\Models\Permission)
                 ->where('obj_id', '=', $obj_id)
                 ->where('level', '=', $level)
-                ->first()['id']
+                ->first()['id'],
         ]);
 
-        (new \App\Models\UserRole())->create([
+        (new \App\Models\UserRole)->create([
             'role_id' => $role['id'],
-            'user_id' => $user['id']
+            'user_id' => $user['id'],
         ]);
     }
 }

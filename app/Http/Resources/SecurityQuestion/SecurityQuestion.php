@@ -15,13 +15,13 @@ class SecurityQuestion extends JsonResource
     public function toArray($request)
     {
         return [
-          'id' => $this->uuid,
-          'question' => $this->question,
-          'answer' => $this->answer,
+            'id' => $this->uuid,
+            'question' => $this->question,
+            'answer' => $this->answer,
             'permissions' => [
                 'can_update' => auth()->user()->can('update', $this->resource),
-                'can_delete' => auth()->user()->can('delete', $this->resource)
-            ]
+                'can_delete' => auth()->user()->can('delete', $this->resource),
+            ],
         ];
     }
 }

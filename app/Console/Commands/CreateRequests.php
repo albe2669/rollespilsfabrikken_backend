@@ -39,33 +39,33 @@ class CreateRequests extends Command
     {
         echo 'Creating index; ';
         $this->call('make:request', [
-            'name' => $this->argument('directory') . '\Index'
+            'name' => $this->argument('directory').'\Index',
         ]);
 
         echo 'Creating store; ';
         $this->call('make:request', [
-            'name' => $this->argument('directory') . '\Store'
+            'name' => $this->argument('directory').'\Store',
         ]);
 
         echo 'Creating update; ';
         $this->call('make:request', [
-            'name' => $this->argument('directory') . '\Update'
+            'name' => $this->argument('directory').'\Update',
         ]);
 
         echo 'Creating destroy; ';
         $this->call('make:request', [
-            'name' => $this->argument('directory') . '\Destroy'
+            'name' => $this->argument('directory').'\Destroy',
         ]);
 
         echo 'Creating show; ';
         $this->call('make:request', [
-            'name' => $this->argument('directory') . '\Show'
+            'name' => $this->argument('directory').'\Show',
         ]);
 
-        echo "use App\\Http\\Requests\\" . $this->argument('directory') . '\Index;' . "\n";
-        echo "use App\\Http\\Requests\\" . $this->argument('directory') . '\Store;' . "\n";
-        echo "use App\\Http\\Requests\\" . $this->argument('directory') . '\Update;' . "\n";
-        echo "use App\\Http\\Requests\\" . $this->argument('directory') . '\Destroy;' . "\n";
-        echo "use App\\Http\\Requests\\" . $this->argument('directory') . '\Show;' . "\n";
+        echo 'use App\\Http\\Requests\\'.$this->argument('directory').'\Index;'."\n";
+        echo 'use App\\Http\\Requests\\'.$this->argument('directory').'\Store;'."\n";
+        echo 'use App\\Http\\Requests\\'.$this->argument('directory').'\Update;'."\n";
+        echo 'use App\\Http\\Requests\\'.$this->argument('directory').'\Destroy;'."\n";
+        echo 'use App\\Http\\Requests\\'.$this->argument('directory').'\Show;'."\n";
     }
 }

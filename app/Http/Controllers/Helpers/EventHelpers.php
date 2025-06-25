@@ -1,41 +1,42 @@
 <?php
 
-
 namespace App\Http\Controllers\Helpers;
 
-
 use App\Http\Controllers\Helpers\Constants\EventConstants;
+use App\Models\Calendar;
 use App\Models\Event;
 use App\Models\EventResource;
 use App\Models\Resource;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\Calendar;
 use Illuminate\Support\Collection;
 
 class EventHelpers
 {
-    public static function convertStandardToCarbon($date) {
+    public static function convertStandardToCarbon($date)
+    {
         return Carbon::createFromFormat('d-m-Y H:i:s', $date);
     }
 
-    public static function convertEvent($event, $timestamp) {
-        $start = self::convertStandardToCarbon(Carbon::createFromTimestamp($timestamp)->format('d-m-Y') . ' ' . $event['start']);
+    public static function convertEvent($event, $timestamp)
+    {
+        $start = self::convertStandardToCarbon(Carbon::createFromTimestamp($timestamp)->format('d-m-Y').' '.$event['start']);
         $end = $start->copy()->addSeconds($event['event_length']);
 
         $event['start_timestamp'] = $start->timestamp;
         $event['end_timestamp'] = $end->timestamp;
 
         $event['start'] = $start->format('Y-m-d\TH:i:s.v\Z');
-        $event['end']   = $end->format('Y-m-d\TH:i:s.v\Z');
+        $event['end'] = $end->format('Y-m-d\TH:i:s.v\Z');
 
         $event['type'] = EventConstants::$recurrenceStringLookup[$event['repeat_interval']];
 
         return $event;
     }
 
-    public static function checkForEventInstance(Event $event, $timestamp) {
+    public static function checkForEventInstance(Event $event, $timestamp)
+    {
         $event = self::convertEvent(collect($event)->merge($event->meta)->toArray(), $timestamp);
 
         // Check if date is before the repetition start or if the date is after the event end
@@ -53,20 +54,21 @@ class EventHelpers
         }
 
         // Perform and validate the repeating calculation
-        if ($event['repeat_interval'] != 0 && (($timestamp - $event['repeat_start']) % $event['repeat_interval']) != 0 ) {
+        if ($event['repeat_interval'] != 0 && (($timestamp - $event['repeat_start']) % $event['repeat_interval']) != 0) {
             return false;
         }
 
         return $event;
     }
 
-    public static function getEventQuery(Builder $query, bool $recurring, int $timestamp) : Builder {
+    public static function getEventQuery(Builder $query, bool $recurring, int $timestamp): Builder
+    {
         $query->rightJoin('event_metas', 'event_metas.event_id', '=', 'events.id');
 
         if ($recurring) {
             $query
                 ->where('repeat_start', '<=', $timestamp)
-                ->where(function($query) use ($timestamp) {
+                ->where(function ($query) use ($timestamp) {
                     return $query->whereNull('repeat_end')
                         ->orWhere('repeat_end', '>', $timestamp);
                 })
@@ -80,9 +82,9 @@ class EventHelpers
         return $query;
     }
 
-
-    public static function parseRequest($request) {
-        if (!$request->query('start') && !$request->query('end')) {
+    public static function parseRequest($request)
+    {
+        if (! $request->query('start') && ! $request->query('end')) {
             $startDate = Carbon::now();
             $endDate = Carbon::now()->addDays(7);
         } else {
@@ -90,16 +92,17 @@ class EventHelpers
             $endDate = Carbon::parse($request->query('end'));
         }
 
-        if (!$startDate || !$endDate) {
+        if (! $startDate || ! $endDate) {
             return response()->json([
-                'message' => 'That start or/and end does not fit the approved format'
+                'message' => 'That start or/and end does not fit the approved format',
             ]);
         }
 
-        return array($startDate, $endDate);
+        return [$startDate, $endDate];
     }
 
-    public static function parseData($data, $calendar) {
+    public static function parseData($data, $calendar)
+    {
         $warnings = [];
 
         // Parse start date
@@ -117,7 +120,7 @@ class EventHelpers
         $metaData = [
             'repeat_start' => $start->copy()->startOfDay()->timestamp,
             'repeat_interval' => 0,
-            'repeat_end' => null
+            'repeat_end' => null,
         ];
 
         // Set the repeat interval
@@ -139,19 +142,19 @@ class EventHelpers
             foreach ($data['resources'] as $resource) {
                 $retrievedResource = Resource::whereUuid($resource)->firstOrFail();
 
-                if ($retrievedResource->type == 'room' && !$calendar->canUseRooms()) {
+                if ($retrievedResource->type == 'room' && ! $calendar->canUseRooms()) {
                     $warnings[] = [
                         'message' => 'Rooms are not allowed in this calendar',
-                        'room' => new \App\Http\Resources\Resource\Resource($retrievedResource)
+                        'room' => new \App\Http\Resources\Resource\Resource($retrievedResource),
                     ];
 
                     continue;
                 }
 
-                if ($retrievedResource->type == 'equipment' && !$calendar->canUseEquipment()) {
+                if ($retrievedResource->type == 'equipment' && ! $calendar->canUseEquipment()) {
                     $warnings[] = [
                         'message' => 'Equipment is not allowed in this calendar',
-                        'equipment' => new \App\Http\Resources\Resource\Resource($retrievedResource)
+                        'equipment' => new \App\Http\Resources\Resource\Resource($retrievedResource),
                     ];
 
                     continue;
@@ -161,19 +164,21 @@ class EventHelpers
             }
         }
 
-        return array($start, $end, $data, $metaData, $resources->keyBy('id'), $warnings);
+        return [$start, $end, $data, $metaData, $resources->keyBy('id'), $warnings];
     }
 
-    public static function getCalendars(User $user) {
+    public static function getCalendars(User $user)
+    {
         $calendars = Calendar::query();
 
         // Get calendars the user has access to
-        if (!$user->isSuperUser()) {
+        if (! $user->isSuperUser()) {
             $calendars = $calendars
-                ->whereIn('obj_id',
+                ->whereIn(
+                    'obj_id',
                     collect($user->permissions())
                         ->where('level', '>', 1)
-                        ->pluck('obj_id')
+                        ->pluck('obj_id'),
                 );
         }
 
@@ -182,7 +187,8 @@ class EventHelpers
             ->get();
     }
 
-    public static function getEventsInRange($start, $end, $calendars, $ignoredEvents) {
+    public static function getEventsInRange($start, $end, $calendars, $ignoredEvents)
+    {
         $events = [];
 
         $baseQuery = Event::query();
@@ -191,20 +197,20 @@ class EventHelpers
                 ->where('events.id', '!=', $ignoredEvent->id);
         }
 
-        for($date = $start->copy(); $date->lt($end); $date->addDay()) {
+        for ($date = $start->copy(); $date->lt($end); $date->addDay()) {
             $timestamp = $date->startOfDay()->timestamp;
 
             $recurring = self::getEventQuery(clone $baseQuery, true, $timestamp)
                 ->whereIn('calendar_id', $calendars)
                 ->get()
-                ->each(function($event, $item) use ($timestamp) {
+                ->each(function ($event, $item) use ($timestamp) {
                     self::convertEvent($event, $timestamp);
                 });
 
             $oneTime = self::getEventQuery(clone $baseQuery, false, $timestamp)
                 ->whereIn('calendar_id', $calendars)
                 ->get()
-                ->each(function($event, $item) use ($timestamp) {
+                ->each(function ($event, $item) use ($timestamp) {
                     self::convertEvent($event, $timestamp);
                 });
 
@@ -214,7 +220,8 @@ class EventHelpers
         return collect($events)->flatten();
     }
 
-    public static function getResourceEventsInRange($start, $end, Resource $resource, $ignoredEvents) {
+    public static function getResourceEventsInRange($start, $end, Resource $resource, $ignoredEvents)
+    {
         $events = [];
 
         $baseQuery = $resource->events()->getQuery();
@@ -223,18 +230,18 @@ class EventHelpers
                 ->where('events.id', '!=', $ignoredEvent->id);
         }
 
-        for($date = $start->copy(); $date->lt($end); $date->addDay()) {
+        for ($date = $start->copy(); $date->lt($end); $date->addDay()) {
             $timestamp = $date->startOfDay()->timestamp;
 
             $recurring = self::getEventQuery(clone $baseQuery, true, $timestamp)
                 ->get()
-                ->each(function($event, $item) use ($timestamp) {
+                ->each(function ($event, $item) use ($timestamp) {
                     self::convertEvent($event, $timestamp);
                 });
 
             $oneTime = self::getEventQuery(clone $baseQuery, false, $timestamp)
                 ->get()
-                ->each(function($event, $item) use ($timestamp) {
+                ->each(function ($event, $item) use ($timestamp) {
                     self::convertEvent($event, $timestamp);
                 });
 
@@ -244,7 +251,8 @@ class EventHelpers
         return collect($events)->flatten();
     }
 
-    public static function filterEventResources(Collection $oldResources, Collection $newResources) {
+    public static function filterEventResources(Collection $oldResources, Collection $newResources)
+    {
         foreach ($oldResources as $oldResource) {
             if ($newResources->contains($oldResource)) {
                 $newResources->forget($oldResource->id);
@@ -256,7 +264,8 @@ class EventHelpers
         return $newResources;
     }
 
-    public static function saveEventResources($resources, $event) {
+    public static function saveEventResources($resources, $event)
+    {
         $calendar = $event->calendar;
 
         foreach ($resources as $resource) {
@@ -269,7 +278,8 @@ class EventHelpers
         }
     }
 
-    public static function updateEventResources($event, $resources) {
+    public static function updateEventResources($event, $resources)
+    {
         $originalEventResources = EventResource::where('event_id', '=', $event->id)->get();
         $resources = EventHelpers::filterEventResources($originalEventResources, $resources);
         EventHelpers::saveEventResources($resources, $event);

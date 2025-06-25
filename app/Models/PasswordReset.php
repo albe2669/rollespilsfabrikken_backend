@@ -20,7 +20,6 @@ use Illuminate\Support\Carbon;
 class PasswordReset extends Model
 {
     protected $fillable = [
-        'email', 'token'
+        'email', 'token',
     ];
-
 }

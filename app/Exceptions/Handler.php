@@ -8,12 +8,11 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Ramsey\Uuid\Exception\InvalidUuidStringException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Throwable;
-use Ramsey\Uuid\Exception\InvalidUuidStringException;
 
 class Handler extends ExceptionHandler
 {
@@ -38,8 +37,8 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param Throwable $exception
      * @return void
+     *
      * @throws Exception
      */
     public function report(Throwable $exception)
@@ -50,9 +49,9 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param Request $request
-     * @param Throwable $exception
+     * @param  Request  $request
      * @return Response
+     *
      * @throws Throwable
      */
     public function render($request, Throwable $exception)
@@ -61,9 +60,9 @@ class Handler extends ExceptionHandler
             $model = $exception->getModel();
             $model = Str::replaceFirst('App\\Models\\', '', $model);
             $model = preg_split('/(?=[A-Z])/', $model);
-            $model = array_filter($model, fn($value) => !is_null($value) && $value !== '');
+            $model = array_filter($model, fn ($value) => ! is_null($value) && $value !== '');
 
-            return response()->json(['message' => join(' ', $model) . ' not found'], 404);
+            return response()->json(['message' => implode(' ', $model).' not found'], 404);
         }
 
         if ($exception instanceof AccessDeniedHttpException && $request->wantsJson()) {
@@ -77,12 +76,14 @@ class Handler extends ExceptionHandler
         if ($exception instanceof PostTooLargeException) {
             ob_get_contents();
             ob_end_clean();
-            return response()->json(['message' => 'That file is too large, max size: ' . ini_get('upload_max_filesize')], 422);
+
+            return response()->json(['message' => 'That file is too large, max size: '.ini_get('upload_max_filesize')], 422);
         }
 
         if ($exception instanceof InvalidUuidStringException) {
             return response()->json(['message' => 'That uuid is not properly formatted or invalid'], 422);
         }
+
         return parent::render($request, $exception);
     }
 }

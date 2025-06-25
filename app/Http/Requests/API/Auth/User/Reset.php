@@ -24,7 +24,7 @@ class Reset extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|string|confirmed'
+            'email' => 'required|string|confirmed',
         ];
     }
 }

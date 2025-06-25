@@ -2,8 +2,9 @@
 
 namespace App\Http\Resources\Role;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Permission\Permission;
+use Illuminate\Http\Resources\Json\JsonResource;
+
 class RoleWithPermissions extends JsonResource
 {
     /**
@@ -22,8 +23,8 @@ class RoleWithPermissions extends JsonResource
             'role_permissions' => Permission::collection($this->permissions),
             'permissions' => [
                 'can_update' => auth()->user()->can('update', $this->resource),
-                'can_delete' => auth()->user()->can('delete', $this->resource)
-            ]
+                'can_delete' => auth()->user()->can('delete', $this->resource),
+            ],
         ];
     }
 }

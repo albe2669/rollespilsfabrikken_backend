@@ -27,8 +27,8 @@ class Calendar extends JsonResource
             'permissions' => [
                 'can_update' => auth()->user()->can('update', $this->resource),
                 'can_delete' => auth()->user()->can('delete', $this->resource),
-                'can_add_events' => auth()->user()->can('create',[Event::class, $this->resource]),
-            ]
+                'can_add_events' => auth()->user()->can('create', [Event::class, $this->resource]),
+            ],
         ];
     }
 }

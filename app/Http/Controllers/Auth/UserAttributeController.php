@@ -12,18 +12,16 @@ use App\Models\User;
 use App\Models\UserRole;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class UserAttributeController extends Controller
 {
     /**
      * Ban user
      *
-     * @param Ban $request
-     * @param User $user
      * @return JsonResponse
      */
-    public function ban(Ban $request, User $user) {
+    public function ban(Ban $request, User $user)
+    {
         if ($user->deleted_at != null) {
             // Unban user
             $user->deleted_at = null;
@@ -34,7 +32,7 @@ class UserAttributeController extends Controller
             // Delete all user tokens, so they cannot lock in
             $user
                 ->tokens()
-                ->each(function($item, $key) {
+                ->each(function ($item, $key) {
                     $item->delete();
                 });
         }
@@ -50,11 +48,11 @@ class UserAttributeController extends Controller
     /**
      * Op user
      *
-     * @param Ban $request
-     * @param User $user
+     * @param  Ban  $request
      * @return JsonResponse
      */
-    public function op(Op $request, User $user) {
+    public function op(Op $request, User $user)
+    {
         $role = (new Role)
             ->where('title', '=', 'Administrator')
             ->first();
@@ -67,10 +65,10 @@ class UserAttributeController extends Controller
             (new UserRole)
                 ->where([
                     ['role_id', '=', $role['id']],
-                    ['user_id', '=', $user['id']]
+                    ['user_id', '=', $user['id']],
                 ])
                 ->get()
-                ->each(function(UserRole $userRole, $key) {
+                ->each(function (UserRole $userRole, $key) {
                     $userRole->delete();
                 });
         } else {

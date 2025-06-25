@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Dyrynda\Database\Support\Casts\EfficientUuid;;
+use Dyrynda\Database\Support\Casts\EfficientUuid;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,14 +29,16 @@ use Laravel\Scout\Searchable;
  */
 class Post extends Model
 {
-    use Searchable, GeneratesUuid, HasFactory;
+    use GeneratesUuid;
+    use HasFactory;
+    use Searchable;
 
     protected static function boot()
     {
         parent::boot();
 
-        static::retrieved(function($model){
-            if (!auth()->user()) {
+        static::retrieved(function ($model) {
+            if (! auth()->user()) {
                 return;
             }
 
@@ -46,22 +48,23 @@ class Post extends Model
 
     // Model specific variables
     public int $relevance;
+
     private static array $relevanceLookup = [
         'new_comment' => 5,
         'new_post' => 4,
         'new_comment_on_users_comment_post' => 3,
         'new_comment_on_users_comment' => 2,
-        'new_comment_on_users_post' => 1
+        'new_comment_on_users_post' => 1,
     ];
 
     protected $casts = [
         'uuid' => EfficientUuid::class,
-        'pinned' => 'boolean'
+        'pinned' => 'boolean',
     ];
 
     protected $fillable = [
         'title',
-        'body'
+        'body',
     ];
 
     public function getRouteKeyName()
@@ -69,68 +72,82 @@ class Post extends Model
         return 'uuid';
     }
 
-    public function toSearchableArray() {
+    public function toSearchableArray()
+    {
         $array = $this->toArray();
 
         $array = Arr::only($array, [
             'id',
             'title',
-            'body'
+            'body',
         ]);
 
         return $array;
     }
 
-    public function forum() {
-        return $this->belongsTo('App\Models\Forum');
+    public function forum()
+    {
+        return $this->belongsTo(Forum::class);
     }
 
-    public function user() {
-        return $this->belongsTo('App\Models\User');
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
-    public function comments() {
-        return $this->hasMany('App\Models\Comment');
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 
-    public function files() {
-        return $this->hasManyThrough('App\Models\File', 'App\Models\PostFile', 'post_id', 'id', 'id', 'file_id');
+    public function files()
+    {
+        return $this->hasManyThrough(File::class, PostFile::class, 'post_id', 'id', 'id', 'file_id');
     }
 
-    public function getThreadedComments() {
+    public function getThreadedComments()
+    {
         return $this->comments()->with('user')->get()->threaded();
     }
 
-    public function getTableColumns() {
+    public function getTableColumns()
+    {
         return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
     }
 
-    private function isUsersPost() {
+    private function isUsersPost()
+    {
         return auth()->user()['id'] === $this->id;
     }
 
-    private function getLatestCommentQuery() {
+    private function getLatestCommentQuery()
+    {
         return (new Comment)
             ->where('post_id', '=', $this->id)
             ->orderBy('created_at', 'desc')
             ->select('id', 'created_at');
     }
 
-    private function getLatestComment() {
+    private function getLatestComment()
+    {
         return $this->getLatestCommentQuery()
             ->where('user_id', '!=', auth()->user()->id)
             ->first();
     }
 
-    private function getDaysSince(string $date) : int {
+    private function getDaysSince(string $date): int
+    {
         return Carbon::createFromFormat('Y-m-d H:i:s', $date)->diffInDays(Carbon::now());
     }
-    private function calculateRelevance(int $relevance, int $daysPassed) : int {
+
+    private function calculateRelevance(int $relevance, int $daysPassed): int
+    {
         return ($relevance * $daysPassed) + $relevance;
     }
 
-    public function getRelevance() : int {
-        $relevance = array();
+    public function getRelevance(): int
+    {
+        $relevance = [];
 
         // TODO: Determine if this should only be root comments
         // Get the latest comment on the post
@@ -143,14 +160,14 @@ class Post extends Model
             // No need to calculate any other relevance stats
             return $this->calculateRelevance(
                 $this->getDaysSince($comment->created_at),
-                self::$relevanceLookup['new_comment_on_users_post']
+                self::$relevanceLookup['new_comment_on_users_post'],
             );
         }
 
         // Calculate relevance for a new post
         $relevance[] = $this->calculateRelevance(
             $this->getDaysSince($this->created_at),
-            self::$relevanceLookup['new_post']
+            self::$relevanceLookup['new_post'],
         );
 
         // If the post is not created by the current user
@@ -164,14 +181,14 @@ class Post extends Model
                 // User hasn't commented on this post
                 $relevance[] = $this->calculateRelevance(
                     $this->getDaysSince($comment->created_at),
-                    self::$relevanceLookup['new_comment']
+                    self::$relevanceLookup['new_comment'],
                 );
             } else {
                 // User has commented on this post
                 // Calculate relevance for comment on post user has commented on
                 $relevance[] = $this->calculateRelevance(
                     $this->getDaysSince($comment->created_at),
-                    self::$relevanceLookup['new_comment_on_users_comment_post']
+                    self::$relevanceLookup['new_comment_on_users_comment_post'],
                 );
 
                 // Get the newest sub comment to users comment
@@ -184,7 +201,7 @@ class Post extends Model
                 if ($subComment !== null) {
                     $relevance[] = $this->calculateRelevance(
                         $this->getDaysSince($subComment->created_at),
-                        self::$relevanceLookup['new_comment_on_users_comment']
+                        self::$relevanceLookup['new_comment_on_users_comment'],
                     );
                 }
             }

@@ -3,10 +3,10 @@
 namespace App\Http\Resources\Post;
 
 use App\Http\Resources\Forum\Forum;
-use App\Models\Comment;
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\User\User as UserResource;
+use App\Models\Comment;
 use App\Models\User;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class PostIndexNewest extends JsonResource
 {
@@ -27,14 +27,16 @@ class PostIndexNewest extends JsonResource
             'locked' => $this->locked,
             'has_files' => $this->files->count() > 0,
             'comments' => $this->comments()->count(),
-            'relevance' => $this->when(isset($this->relevance), function() { return $this->relevance; }),
+            'relevance' => $this->when(isset($this->relevance), function () {
+                return $this->relevance;
+            }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'permissions' => [
-		    'can_pin' => auth()->user()->can('pin', $this->resource),
+                'can_pin' => auth()->user()->can('pin', $this->resource),
                 'can_update' => auth()->user()->can('update', $this->resource),
                 'can_delete' => auth()->user()->can('delete', $this->resource),
-                'can_add_comments' => auth()->user()->can('create', [Comment::class, $this->resource->forum])
+                'can_add_comments' => auth()->user()->can('create', [Comment::class, $this->resource->forum]),
             ],
         ];
     }

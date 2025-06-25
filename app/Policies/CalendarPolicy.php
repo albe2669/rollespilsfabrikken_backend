@@ -20,7 +20,6 @@ class CalendarPolicy
     /**
      * Determine whether the user can view any calendars.
      *
-     * @param User $user
      * @return mixed
      */
     public function viewAny(User $user)
@@ -31,19 +30,16 @@ class CalendarPolicy
     /**
      * Determine whether the user can view the calendar.
      *
-     * @param User $user
-     * @param Calendar $calendar
      * @return mixed
      */
     public function view(User $user, Calendar $calendar)
     {
-        return (new PolicyHelper())->checkLevel($user,  $calendar['obj_id'], 2);
+        return (new PolicyHelper)->checkLevel($user, $calendar['obj_id'], 2);
     }
 
     /**
      * Determine whether the user can create calendars.
      *
-     * @param User $user
      * @return mixed
      */
     public function create(User $user)
@@ -54,8 +50,6 @@ class CalendarPolicy
     /**
      * Determine whether the user can update the calendar.
      *
-     * @param User $user
-     * @param Calendar $calendar
      * @return mixed
      */
     public function update(User $user, Calendar $calendar)
@@ -63,15 +57,13 @@ class CalendarPolicy
         if ($user->isSuperUser()) {
             return $user->isSuperUser();
         } else {
-            return (new PolicyHelper())->checkLevel($user,  $calendar['obj_id'], 6);
+            return (new PolicyHelper)->checkLevel($user, $calendar['obj_id'], 6);
         }
     }
 
     /**
      * Determine whether the user can delete the calendar.
      *
-     * @param User $user
-     * @param Calendar $calendar
      * @return mixed
      */
     public function delete(User $user, Calendar $calendar)
@@ -82,8 +74,6 @@ class CalendarPolicy
     /**
      * Determine whether the user can restore the calendar.
      *
-     * @param User $user
-     * @param Calendar $calendar
      * @return mixed
      */
     public function restore(User $user, Calendar $calendar)
@@ -94,8 +84,6 @@ class CalendarPolicy
     /**
      * Determine whether the user can permanently delete the calendar.
      *
-     * @param User $user
-     * @param Calendar $calendar
      * @return mixed
      */
     public function forceDelete(User $user, Calendar $calendar)

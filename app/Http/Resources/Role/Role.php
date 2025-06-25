@@ -23,8 +23,8 @@ class Role extends JsonResource
             'role_permissions' => PermissionWithoutDelete::collection($this->permissions),
             'permissions' => [
                 'can_update' => auth()->user()->can('update', $this->resource),
-                'can_delete' => auth()->user()->can('delete', $this->resource)
-            ]
+                'can_delete' => auth()->user()->can('delete', $this->resource),
+            ],
         ];
     }
 }

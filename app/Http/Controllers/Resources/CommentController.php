@@ -4,23 +4,20 @@ namespace App\Http\Controllers\Resources;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Helpers\FileHelpers;
+use App\Http\Controllers\Helpers\Helpers;
 use App\Http\Requests\API\Comment\Index;
 use App\Http\Requests\API\Comment\Pin;
 use App\Http\Requests\API\Comment\Show;
 use App\Http\Requests\API\Comment\Store;
 use App\Http\Requests\API\Comment\Update;
+use App\Http\Resources\Comment\Comment as CommentResource;
+use App\Http\Resources\Comment\CommentWithChildComments;
+use App\Http\Resources\Comment\CommentWithChildCommentsCollection;
 use App\Models\Comment;
 use App\Models\Forum;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
-use App\Http\Controllers\Helpers\Helpers;
-
-use App\Http\Resources\Comment\Comment as CommentResource;
-use App\Http\Resources\Comment\CommentCollection;
-use App\Http\Resources\Comment\CommentWithUser;
-use App\Http\Resources\Comment\CommentWithChildComments;
-use App\Http\Resources\Comment\CommentWithChildCommentsCollection;
 
 // Models
 
@@ -31,9 +28,6 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Index $request
-     * @param Forum $forum
-     * @param Post $post
      * @return JsonResponse
      */
     public function index(Index $request, Forum $forum, Post $post)
@@ -45,7 +39,7 @@ class CommentController extends Controller
             ->with('childComments')
             ->getQuery();
 
-        $comments = (new Helpers())->filterItems($request, $comments);
+        $comments = (new Helpers)->filterItems($request, $comments);
 
         return response()->json([
             'message' => 'success',
@@ -56,10 +50,6 @@ class CommentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Show $request
-     * @param Forum $forum
-     * @param Post $post
-     * @param Comment $comment
      * @return JsonResponse
      */
     public function show(Show $request, Forum $forum, Post $post, Comment $comment)
@@ -73,29 +63,26 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Store $request
-     * @param Forum $forum
-     * @param Post $post
      * @return JsonResponse
      */
     public function store(Store $request, Forum $forum, Post $post)
     {
         if ($post->locked) {
             return response()->json([
-                'message' => 'Cannot create comments as the post is locked'
+                'message' => 'Cannot create comments as the post is locked',
             ], 423);
         }
 
         $data = $request->validated();
 
-        $comment = (new Comment())->fill($data);
+        $comment = (new Comment)->fill($data);
         $comment->user()->associate(auth()->user());
 
         if (Arr::has($data, 'parent_id')) {
             $parentComment = Comment::whereUuid($data['parent_id'])->firstOrFail();
 
             if ($post['id'] != $parentComment['post_id']) {
-                return response()->json( [
+                return response()->json([
                     'message' => 'The parent comment is not part of this post.',
                 ], 400);
             } else {
@@ -111,20 +98,15 @@ class CommentController extends Controller
             }
         }
 
-        return response()->json( [
+        return response()->json([
             'message' => 'success',
             'comment' => new CommentResource($comment->refresh()),
         ], 201);
     }
 
-
     /**
      * Update the specified resource in storage.
      *
-     * @param Update $request
-     * @param Forum $forum
-     * @param Post $post
-     * @param Comment $comment
      * @return JsonResponse
      */
     public function update(Update $request, Forum $forum, Post $post, Comment $comment)
@@ -140,9 +122,6 @@ class CommentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Forum $forum
-     * @param Post $post
-     * @param Comment $comment
      * @return JsonResponse
      */
     public function destroy(Forum $forum, Post $post, Comment $comment)
@@ -150,24 +129,20 @@ class CommentController extends Controller
         $comment->delete();
 
         return response()->json([
-            'message' => "success"
+            'message' => 'success',
         ], 200);
     }
 
     /**
      * Pin the specified comment.
      *
-     * @param Pin $request
-     * @param Forum $forum
-     * @param Post $post
-     * @param Comment $comment
      * @return JsonResponse
      */
     public function pin(Pin $request, Forum $forum, Post $post, Comment $comment)
     {
         if ($comment->parent_id !== null) {
             return response()->json([
-               'message' => 'You can only pin root comments'
+                'message' => 'You can only pin root comments',
             ], 400);
         }
 

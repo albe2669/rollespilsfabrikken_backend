@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Support\Casts\EfficientUuid;;
-use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -21,11 +19,13 @@ use Illuminate\Support\Carbon;
  */
 class PostFile extends Model
 {
-    public function post() {
-        return $this->belongsTo('App\Models\Post');
+    public function post()
+    {
+        return $this->belongsTo(Post::class);
     }
 
-    public function file() {
-        return $this->belongsTo('App\Models\File');
+    public function file()
+    {
+        return $this->belongsTo(File::class);
     }
 }

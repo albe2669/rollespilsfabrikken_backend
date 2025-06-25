@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Support\Casts\EfficientUuid;;
+use Dyrynda\Database\Support\Casts\EfficientUuid;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,7 +26,9 @@ use Laravel\Scout\Searchable;
  */
 class Role extends Model
 {
-    use Searchable, GeneratesUuid, HasFactory;
+    use GeneratesUuid;
+    use HasFactory;
+    use Searchable;
 
     protected $casts = [
         'uuid' => EfficientUuid::class,
@@ -36,7 +38,7 @@ class Role extends Model
     protected $fillable = [
         'title',
         'color',
-        'show'
+        'show',
     ];
 
     public function getRouteKeyName()
@@ -44,7 +46,8 @@ class Role extends Model
         return 'uuid';
     }
 
-    public function toSearchableArray() {
+    public function toSearchableArray()
+    {
         $array = $this->toArray();
 
         $array = Arr::only($array, [
@@ -55,7 +58,8 @@ class Role extends Model
         return $array;
     }
 
-    public function permissions() {
-        return $this->hasManyThrough('App\Models\Permission', 'App\Models\RolePerm', 'role_id', 'id', 'id', 'permission_id');
+    public function permissions()
+    {
+        return $this->hasManyThrough(Permission::class, RolePerm::class, 'role_id', 'id', 'id', 'permission_id');
     }
 }

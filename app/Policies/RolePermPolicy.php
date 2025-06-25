@@ -8,13 +8,11 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 class RolePermPolicy
 {
     use HandlesAuthorization;
-
     use HandlesAuthorization;
 
     /**
      * Determine whether the user can view any models.
      *
-     * @param User $user
      * @return mixed
      */
     public function viewAnyCalendar(User $user)
@@ -25,7 +23,6 @@ class RolePermPolicy
     /**
      * Determine whether the user can view any models.
      *
-     * @param User $user
      * @return mixed
      */
     public function viewAnyForum(User $user)
@@ -36,7 +33,6 @@ class RolePermPolicy
     /**
      * Determine whether the user can view any models.
      *
-     * @param User $user
      * @return mixed
      */
     public function add(User $user)
@@ -47,7 +43,6 @@ class RolePermPolicy
     /**
      * Determine whether the user can view any models.
      *
-     * @param User $user
      * @return mixed
      */
     public function addCalendar(User $user)
@@ -58,7 +53,6 @@ class RolePermPolicy
     /**
      * Determine whether the user can view any models.
      *
-     * @param User $user
      * @return mixed
      */
     public function addForum(User $user)

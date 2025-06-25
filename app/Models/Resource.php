@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Support\Casts\EfficientUuid;;
+use Dyrynda\Database\Support\Casts\EfficientUuid;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -33,7 +33,7 @@ class Resource extends Model
     protected $fillable = [
         'name',
         'description',
-        'type'
+        'type',
     ];
 
     public function getRouteKeyName()
@@ -41,20 +41,23 @@ class Resource extends Model
         return 'uuid';
     }
 
-    public function toSearchableArray() {
+    public function toSearchableArray()
+    {
         return Arr::only($this->toArray(), [
             'uuid',
             'name',
             'description',
-            'type'
+            'type',
         ]);
     }
 
-    public function events() {
-        return $this->belongsToMany('App\Models\Event', 'event_resources');
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_resources');
     }
 
-    public function getTableColumns() {
+    public function getTableColumns()
+    {
         return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Comment;
 
-use App\Http\Resources\Comment\CommentWithChildComments as CommentResource;
 use App\Http\Resources\CommentFile\CommentFile as CommentFileResource;
 use App\Http\Resources\User\User as UserResource;
 use App\Models\User;

@@ -46,11 +46,11 @@ return [
 
     // Fonts used to render text.
     // If contains more than one fonts, randomly selected based on name supplied
-    'fonts' => [__DIR__ . '../../public/fonts/SourceSansPro/SourceSansPro-Regular.ttf'],
+    'fonts' => [__DIR__.'../../public/fonts/SourceSansPro/SourceSansPro-Regular.ttf'],
 
     // List of foreground colors to be used, randomly selected based on name supplied
     'foregrounds' => [
-        '#FFFFFF'
+        '#FFFFFF',
     ],
 
     // List of background colors to be used, randomly selected based on name supplied
@@ -95,8 +95,8 @@ return [
                 '#da4e52',
             ],
             'foregrounds' => [
-                '#FFFFFF'
-            ]
+                '#FFFFFF',
+            ],
         ],
         'grayscale-light' => [
             'backgrounds' => ['#edf2f7', '#e2e8f0', '#cbd5e0'],
@@ -149,19 +149,3 @@ return [
         ],
     ],
 ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

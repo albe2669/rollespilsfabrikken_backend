@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Support\Casts\EfficientUuid;;
+use Dyrynda\Database\Support\Casts\EfficientUuid;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,7 +28,9 @@ use Laravel\Scout\Searchable;
  */
 class Forum extends Model
 {
-    use Searchable, GeneratesUuid, HasFactory;
+    use GeneratesUuid;
+    use HasFactory;
+    use Searchable;
 
     protected $casts = [
         'uuid' => EfficientUuid::class,
@@ -37,7 +39,7 @@ class Forum extends Model
     protected $fillable = [
         'title',
         'description',
-        'colour'
+        'colour',
     ];
 
     public function getRouteKeyName()
@@ -45,35 +47,41 @@ class Forum extends Model
         return 'uuid';
     }
 
-    public function obj() {
-        return $this->belongsTo('App\Models\Obj');
+    public function obj()
+    {
+        return $this->belongsTo(Obj::class);
     }
 
-    public function toSearchableArray() {
+    public function toSearchableArray()
+    {
         $array = $this->toArray();
 
         $array = Arr::only($array, [
             'id',
             'title',
-            'description'
+            'description',
         ]);
 
         return $array;
     }
 
-    public function permissions() {
+    public function permissions()
+    {
         return $this->obj()->first()->permissions;
     }
 
-    public function posts() {
-        return $this->hasMany('App\Models\Post');
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
     }
 
-    public function comments() {
-        return $this->hasManyThrough('App\Models\Comment', 'App\Models\Post');
+    public function comments()
+    {
+        return $this->hasManyThrough(Comment::class, Post::class);
     }
 
-    public function getTableColumns() {
+    public function getTableColumns()
+    {
         return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
     }
 }

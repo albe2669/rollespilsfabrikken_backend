@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Support\Casts\EfficientUuid;;
+use Dyrynda\Database\Support\Casts\EfficientUuid;
 use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -26,7 +26,8 @@ use Laravel\Scout\Searchable;
  */
 class Permission extends Model
 {
-    use Searchable, GeneratesUuid;
+    use GeneratesUuid;
+    use Searchable;
 
     protected $casts = [
         'uuid' => EfficientUuid::class,
@@ -36,7 +37,7 @@ class Permission extends Model
         'obj_id',
         'level',
         'title',
-        'description'
+        'description',
     ];
 
     public function getRouteKeyName()
@@ -44,27 +45,31 @@ class Permission extends Model
         return 'uuid';
     }
 
-    public function toSearchableArray() {
+    public function toSearchableArray()
+    {
         $array = $this->toArray();
 
         $array = Arr::only($array, [
             'id',
             'title',
-            'description'
+            'description',
         ]);
 
         return $array;
     }
 
-    public function getTableColumns() {
+    public function getTableColumns()
+    {
         return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
     }
 
-    public function obj() {
-        return $this->belongsTo('App\Models\Obj');
+    public function obj()
+    {
+        return $this->belongsTo(Obj::class);
     }
 
-    public function roles() {
-        return $this->belongsToMany('App\Models\Role', 'role_perms');
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_perms');
     }
 }

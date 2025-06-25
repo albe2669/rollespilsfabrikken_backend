@@ -10,8 +10,8 @@ use Illuminate\Support\Carbon;
  * Class EventResource
  *
  * @property int $id
- * @property integer $event_id
- * @property integer $resource_id
+ * @property int $event_id
+ * @property int $resource_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  *
@@ -19,11 +19,13 @@ use Illuminate\Support\Carbon;
  */
 class EventResource extends Model
 {
-    public function event() {
-        return $this->belongsTo('App\Models\Event');
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
     }
 
-    public function resource() {
-        return $this->belongsTo('App\Models\Resource');
+    public function resource()
+    {
+        return $this->belongsTo(Resource::class);
     }
 }

@@ -10,7 +10,6 @@ class PermissionObserver
     /**
      * Handle the permission "created" event.
      *
-     * @param  \App\Models\Permission  $permission
      * @return void
      */
     public function created(Permission $permission)
@@ -21,7 +20,6 @@ class PermissionObserver
     /**
      * Handle the permission "updated" event.
      *
-     * @param  \App\Models\Permission  $permission
      * @return void
      */
     public function updated(Permission $permission)
@@ -32,7 +30,6 @@ class PermissionObserver
     /**
      * Handle the permission "deleted" event.
      *
-     * @param  \App\Models\Permission  $permission
      * @return void
      */
     public function deleted(Permission $permission)
@@ -48,7 +45,6 @@ class PermissionObserver
     /**
      * Handle the permission "restored" event.
      *
-     * @param  \App\Models\Permission  $permission
      * @return void
      */
     public function restored(Permission $permission)
@@ -59,7 +55,6 @@ class PermissionObserver
     /**
      * Handle the permission "force deleted" event.
      *
-     * @param  \App\Models\Permission  $permission
      * @return void
      */
     public function forceDeleted(Permission $permission)

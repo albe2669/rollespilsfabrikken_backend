@@ -20,7 +20,6 @@ class ForumPolicy
     /**
      * Determine whether the user can view any forums.
      *
-     * @param User $user
      * @return mixed
      */
     public function viewAny(User $user)
@@ -31,19 +30,16 @@ class ForumPolicy
     /**
      * Determine whether the user can view the forum.
      *
-     * @param User $user
-     * @param Forum $forum
      * @return mixed
      */
     public function view(User $user, Forum $forum)
     {
-        return (new PolicyHelper())->checkLevel($user,  $forum['obj_id'], 2);
+        return (new PolicyHelper)->checkLevel($user, $forum['obj_id'], 2);
     }
 
     /**
      * Determine whether the user can create forums.
      *
-     * @param User $user
      * @return mixed
      */
     public function create(User $user)
@@ -54,8 +50,6 @@ class ForumPolicy
     /**
      * Determine whether the user can update the forum.
      *
-     * @param User $user
-     * @param Forum $forum
      * @return mixed
      */
     public function update(User $user, Forum $forum)
@@ -63,7 +57,7 @@ class ForumPolicy
         if ($user->isSuperUser()) {
             return $user->isSuperUser();
         } else {
-            return (new PolicyHelper())->checkLevel($user,  $forum['obj_id'], 6);
+            return (new PolicyHelper)->checkLevel($user, $forum['obj_id'], 6);
         }
 
     }
@@ -71,7 +65,6 @@ class ForumPolicy
     /**
      * Determine whether the user can update the forums priority.
      *
-     * @param User $user
      * @return mixed
      */
     public function updatePriorities(User $user)
@@ -82,8 +75,6 @@ class ForumPolicy
     /**
      * Determine whether the user can delete the forum.
      *
-     * @param User $user
-     * @param Forum $forum
      * @return mixed
      */
     public function delete(User $user, Forum $forum)
@@ -94,8 +85,6 @@ class ForumPolicy
     /**
      * Determine whether the user can restore the forum.
      *
-     * @param User $user
-     * @param Forum $forum
      * @return mixed
      */
     public function restore(User $user, Forum $forum)
@@ -106,8 +95,6 @@ class ForumPolicy
     /**
      * Determine whether the user can permanently delete the forum.
      *
-     * @param User $user
-     * @param Forum $forum
      * @return mixed
      */
     public function forceDelete(User $user, Forum $forum)

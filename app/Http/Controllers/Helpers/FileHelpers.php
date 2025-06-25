@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\Helpers;
-
 
 use App\Models\Comment;
 use App\Models\CommentFile;
@@ -16,7 +14,8 @@ class FileHelpers
 {
     public const uploadPath = 'uploads\\';
 
-    public static function savePostFile(UploadedFile $file, Post $post) {
+    public static function savePostFile(UploadedFile $file, Post $post)
+    {
         $dbFile = self::saveToDb($file);
 
         $postFile = (new PostFile);
@@ -24,12 +23,13 @@ class FileHelpers
         $postFile->post()->associate($post);
         $postFile->save();
 
-        self::saveFile($file,  $dbFile->saved_name);
+        self::saveFile($file, $dbFile->saved_name);
 
         return $dbFile;
     }
 
-    public static function saveCommentFile(UploadedFile $file, Comment $comment) {
+    public static function saveCommentFile(UploadedFile $file, Comment $comment)
+    {
         $dbFile = self::saveToDb($file);
 
         $commentFile = (new CommentFile);
@@ -37,31 +37,33 @@ class FileHelpers
         $commentFile->comment()->associate($comment);
         $commentFile->save();
 
-        self::saveFile($file,  $dbFile->saved_name);
+        self::saveFile($file, $dbFile->saved_name);
 
         return $dbFile;
     }
 
-    private static function saveToDb(UploadedFile $file) : File {
+    private static function saveToDb(UploadedFile $file): File
+    {
         $dbFile = (new File)->fill([
             'name' => $file->getClientOriginalName(),
             'saved_name' => 'tmp',
-            'file_size' => $file->getSize()
+            'file_size' => $file->getSize(),
         ]);
 
         $dbFile->save();
         $dbFile = $dbFile->refresh();
 
-        $dbFile->saved_name = $dbFile->uuid . '.dat';
+        $dbFile->saved_name = $dbFile->uuid.'.dat';
         $dbFile->save();
 
         return $dbFile;
     }
 
-    private static function saveFile(UploadedFile $file, String $name) {
+    private static function saveFile(UploadedFile $file, string $name)
+    {
         $fileContent = $file->get();
         $encryptedContent = encrypt($fileContent);
 
-        Storage::put(self::uploadPath . $name, $encryptedContent);
+        Storage::put(self::uploadPath.$name, $encryptedContent);
     }
 }

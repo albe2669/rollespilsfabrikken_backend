@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources\Comment;
 
+use App\Http\Resources\CommentFile\CommentFile as CommentFileResource;
 use App\Models\Comment as CommentClass;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\CommentFile\CommentFile as CommentFileResource;
 
 class Comment extends JsonResource
 {
@@ -31,8 +31,8 @@ class Comment extends JsonResource
                 'can_update' => auth()->user()->can('update', $this->resource),
                 'can_delete' => auth()->user()->can('delete', $this->resource),
                 'can_pin' => auth()->user()->can('pin', $this->resource),
-		        'can_add_comments' => auth()->user()->can('create', [CommentClass::class, $this->resource->forum])
-            ]
+                'can_add_comments' => auth()->user()->can('create', [CommentClass::class, $this->resource->forum]),
+            ],
         ];
     }
 }

@@ -4,34 +4,30 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Helpers\Helpers;
+use App\Http\Requests\API\Auth\Role\Destroy;
 use App\Http\Requests\API\Auth\Role\Index;
+use App\Http\Requests\API\Auth\Role\Show;
 use App\Http\Requests\API\Auth\Role\Store;
 use App\Http\Requests\API\Auth\Role\Update;
-use App\Http\Requests\API\Auth\Role\Destroy;
-use App\Http\Requests\API\Auth\Role\Show;
-use App\Models\Role;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Http\Resources\Role\Role as RoleResource;
 use App\Http\Resources\Role\RoleCollection;
 use App\Http\Resources\Role\RoleWithPermissions;
-use App\Http\Resources\Role\RoleWithPermissionsCollection;
-use Illuminate\Http\Response;
+use App\Models\Role;
+use Illuminate\Http\JsonResponse;
 
 class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param Index $request
      * @return JsonResponse
      */
     public function index(Index $request)
     {
         if ($request->query('search')) {
-            $roles = (new Helpers())->searchItems($request, Role::class, []);
+            $roles = (new Helpers)->searchItems($request, Role::class, []);
         } else {
-            $roles = (new Helpers())->filterItems($request, Role::query());
+            $roles = (new Helpers)->filterItems($request, Role::query());
         }
 
         return response()->json([
@@ -43,7 +39,6 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Store $request
      * @return JsonResponse
      */
     public function store(Store $request)
@@ -60,8 +55,6 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Show $request
-     * @param Role $role
      * @return JsonResponse
      */
     public function show(Show $request, Role $role)
@@ -75,8 +68,6 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Update $request
-     * @param Role $role
      * @return JsonResponse
      */
     public function update(Update $request, Role $role)
@@ -92,7 +83,6 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Role $role
      * @return JsonResponse
      */
     public function destroy(Destroy $request, Role $role)
@@ -100,7 +90,7 @@ class RoleController extends Controller
         $role->delete();
 
         return response()->json([
-            'message' => "success"
+            'message' => 'success',
         ], 200);
     }
 }

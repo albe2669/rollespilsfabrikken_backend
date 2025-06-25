@@ -20,7 +20,6 @@ class PermissionPolicy
     /**
      * Determine whether the user can view any permissions.
      *
-     * @param User $user
      * @return bool
      */
     public function viewAny(User $user)
@@ -31,8 +30,6 @@ class PermissionPolicy
     /**
      * Determine whether the user can view the permission.
      *
-     * @param User $user
-     * @param Permission $permission
      * @return bool
      */
     public function view(User $user, Permission $permission)
@@ -43,7 +40,6 @@ class PermissionPolicy
     /**
      * Determine whether the user can view the permissions linked to the forum.
      *
-     * @param User $user
      * @return bool
      */
     public function viewAnyForum(User $user)
@@ -54,7 +50,6 @@ class PermissionPolicy
     /**
      * Determine whether the user can view the permissions linked to the calendar.
      *
-     * @param User $user
      * @return bool
      */
     public function viewAnyCalendar(User $user)

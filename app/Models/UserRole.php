@@ -21,14 +21,16 @@ class UserRole extends Model
 {
     protected $fillable = [
         'user_id',
-        'role_id'
+        'role_id',
     ];
 
-    public function user() {
-        return $this->belongsTo('App\Models\User');
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
-    public function role() {
-        return $this->belongsTo('App\Models\Role');
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }

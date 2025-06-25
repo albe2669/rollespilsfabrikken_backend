@@ -4,30 +4,24 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Auth\User\AvatarUpload;
-use App\Http\Requests\API\Auth\User\Ban;
 use App\Http\Requests\API\Auth\User\Clear;
+use App\Http\Requests\API\Auth\User\Destroy;
+use App\Http\Requests\API\Auth\User\DestroySelf;
 use App\Http\Requests\API\Auth\User\Index;
 use App\Http\Requests\API\Auth\User\IndexTokens;
 use App\Http\Requests\API\Auth\User\Reset;
 use App\Http\Requests\API\Auth\User\RevokeToken;
-use App\Http\Requests\API\Auth\User\Unban;
+use App\Http\Requests\API\Auth\User\UpdateUsername;
 use App\Http\Resources\Token\Token;
 use App\Http\Resources\User\LoggedInUser;
+use App\Http\Resources\User\User as UserResource;
 use App\Models\Comment;
 use App\Models\Event;
-use App\Models\Role;
 use App\Models\User;
-use App\Models\UserRole;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\API\Auth\User\UpdateUsername;
-use App\Http\Requests\API\Auth\User\Destroy;
-use App\Http\Requests\API\Auth\User\DestroySelf;
-use App\Http\Resources\User\User as UserResource;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -36,13 +30,13 @@ class UserController extends Controller
     /**
      * Fetch the authed user
      *
-     * @param Index $request
      * @return JsonResponse
      */
-    public function index(Index $request) {
+    public function index(Index $request)
+    {
         return response()->json([
             'message' => 'success',
-            'users' => UserResource::collection(User::all())
+            'users' => UserResource::collection(User::all()),
         ]);
     }
 
@@ -51,20 +45,22 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function user() {
+    public function user()
+    {
         return response()->json([
             'message' => 'success',
-            'user' => new LoggedInUser(auth()->user())
+            'user' => new LoggedInUser(auth()->user()),
         ]);
     }
 
     /**
      * Update the authed users username
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return JsonResponse
      */
-    public function updateUsername(UpdateUsername $request) {
+    public function updateUsername(UpdateUsername $request)
+    {
         $user = auth()->user();
 
         $user->username = $request->validated()['username'];
@@ -72,17 +68,17 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'user' => new LoggedInUser(auth()->user())
+            'user' => new LoggedInUser(auth()->user()),
         ]);
     }
 
     /**
      * Delete the authed user
      *
-     * @param DestroySelf $request
      * @return JsonResponse
      */
-    public function destroySelf(DestroySelf $request) {
+    public function destroySelf(DestroySelf $request)
+    {
         auth()->user()->delete();
 
         return response()->json([
@@ -93,11 +89,10 @@ class UserController extends Controller
     /**
      * Delete user
      *
-     * @param Destroy $request
-     * @param User $user
      * @return JsonResponse
      */
-    public function destroy(Destroy $request, User $user) {
+    public function destroy(Destroy $request, User $user)
+    {
         $user->delete();
 
         return response()->json([
@@ -105,21 +100,18 @@ class UserController extends Controller
         ]);
     }
 
-
-
     /**
      * Reset users credentials
      *
-     * @param Reset $request
-     * @param User $user
      * @return JsonResponse
      */
-    public function reset(Reset $request, User $user) {
+    public function reset(Reset $request, User $user)
+    {
         $existingUser = User::where('email', '=', $request->validated()['email'])->first();
 
         if ($existingUser && $existingUser['id'] !== $user['id']) {
             return response()->json([
-                'message' => 'Den email eksisterer allerede i systemet og hører ikke til den bruger der nulstilles'
+                'message' => 'Den email eksisterer allerede i systemet og hører ikke til den bruger der nulstilles',
             ], 400);
         }
         $user->email = $request->validated()['email'];
@@ -136,26 +128,25 @@ class UserController extends Controller
     /**
      * Clear all data created by the user
      *
-     * @param Clear $request
-     * @param User $user
      * @return JsonResponse
      */
-    public function clear(Clear $request, User $user) {
+    public function clear(Clear $request, User $user)
+    {
         $user
             ->posts()
-            ->each(function(\App\Models\Post $post, $key) {
-               $post->delete();
+            ->each(function (\App\Models\Post $post, $key) {
+                $post->delete();
             });
 
         $user
             ->comments()
-            ->each(function(Comment $comment, $key) {
+            ->each(function (Comment $comment, $key) {
                 $comment->delete();
             });
 
         $user
             ->events()
-            ->each(function(Event $event, $key) {
+            ->each(function (Event $event, $key) {
                 $event->delete();
             });
 
@@ -168,10 +159,10 @@ class UserController extends Controller
     /**
      * Update avatar
      *
-     * @param AvatarUpload $request
      * @return JsonResponse
      */
-    public function avatar(AvatarUpload $request) {
+    public function avatar(AvatarUpload $request)
+    {
         $user = auth()->user();
 
         $file = $request
@@ -179,13 +170,13 @@ class UserController extends Controller
 
         if ($file->getSize() > 256000000) {
             return response()->json([
-                'message' => 'Fil må være max 256mb'
+                'message' => 'Fil må være max 256mb',
             ], 400);
         }
 
         $path = $file
-            ->storeAs('public/avatars/' . $user->uuid, 'avatar.' . $file->extension());
-        $user->avatar = 'avatar.' . $file->extension();
+            ->storeAs('public/avatars/'.$user->uuid, 'avatar.'.$file->extension());
+        $user->avatar = 'avatar.'.$file->extension();
         $user->save();
 
         return response()->json([
@@ -197,10 +188,10 @@ class UserController extends Controller
     /**
      * Update avatar
      *
-     * @param IndexTokens $request
      * @return JsonResponse
      */
-    public function indexTokens(IndexTokens $request) {
+    public function indexTokens(IndexTokens $request)
+    {
         $user = auth()->user();
 
         return response()->json([
@@ -212,12 +203,12 @@ class UserController extends Controller
     /**
      * Update avatar
      *
-     * @param RevokeToken $request
-     * @param PersonalAccessToken $token
      * @return JsonResponse
+     *
      * @throws Exception
      */
-    public function revokeToken(RevokeToken $request, PersonalAccessToken $token) {
+    public function revokeToken(RevokeToken $request, PersonalAccessToken $token)
+    {
         $user = auth()->user();
 
         $token->delete();

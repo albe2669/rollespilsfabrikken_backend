@@ -27,7 +27,8 @@ class EventMeta extends Model
         'repeat_end',
     ];
 
-    public function event() {
+    public function event()
+    {
         return $this->belongsTo(Event::class);
     }
 }

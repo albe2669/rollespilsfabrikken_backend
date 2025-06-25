@@ -20,7 +20,7 @@ class LoggedInUser extends JsonResource
             'email' => $this->email,
             'avatar_url' => $this->avatar_url,
             'created_at' => $this->created_at,
-            'super_user' => $this->super_user
+            'super_user' => $this->super_user,
         ];
     }
 }

@@ -1,15 +1,12 @@
 <?php
 
-
 namespace App\Http\Controllers\Helpers;
 
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\Exceptions\InvalidDateException;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Str;
 
 class Helpers
@@ -17,7 +14,9 @@ class Helpers
     public function convertDate($date)
     {
         $date = Str::replaceFirst('\r\n', '', $date);
-        if ($date == null || $date == '' || $date == false) return false;
+        if ($date == null || $date == '' || $date == false) {
+            return false;
+        }
         $approvedFormats = [
             'Y-m-d H:i:s',
             'd-m-Y H:i:s',
@@ -33,15 +32,15 @@ class Helpers
             'd-m-Y',
             'y-m-d',
             'd-m-y',
-            'd M Y'
+            'd M Y',
         ];
 
-        foreach($approvedFormats as $format) {
+        foreach ($approvedFormats as $format) {
             try {
-                if($carbon = Carbon::createFromFormat($format, $date)) {
+                if ($carbon = Carbon::createFromFormat($format, $date)) {
                     return $carbon->format('Y-m-d H:i:s');
                 }
-            } catch (InvalidDateException | \InvalidArgumentException $e) {
+            } catch (InvalidDateException|\InvalidArgumentException $e) {
 
             }
 
@@ -53,7 +52,9 @@ class Helpers
     public function convertDateToCarbon($date)
     {
         $date = Str::replaceFirst('\r\n', '', $date);
-        if ($date == null || $date == '' || $date == false) return false;
+        if ($date == null || $date == '' || $date == false) {
+            return false;
+        }
         $approvedFormats = [
             'Y-m-d H:i:s',
             'd-m-Y H:i:s',
@@ -69,15 +70,15 @@ class Helpers
             'd-m-Y',
             'y-m-d',
             'd-m-y',
-            'd M Y'
+            'd M Y',
         ];
 
-        foreach($approvedFormats as $format) {
+        foreach ($approvedFormats as $format) {
             try {
-                if($carbon = Carbon::createFromFormat($format, $date)) {
+                if ($carbon = Carbon::createFromFormat($format, $date)) {
                     return $carbon;
                 }
-            } catch (InvalidDateException | \InvalidArgumentException $e) {
+            } catch (InvalidDateException|\InvalidArgumentException $e) {
 
             }
 
@@ -86,15 +87,16 @@ class Helpers
         return false;
     }
 
-    public function filterItems(FormRequest $request, $models) {
+    public function filterItems(FormRequest $request, $models)
+    {
         $items = $request->query('items') ?? 5;
-        $items = (int)$items;
+        $items = (int) $items;
 
-        $order  = 'desc';
-        $current_page = $request->query("page") ?? 1;
+        $order = 'desc';
+        $current_page = $request->query('page') ?? 1;
 
         if ($request->query('sort') && $request->query('sort') == 'relevance') {
-            $retrieved = $models->get()->sort(function($a, $b) {
+            $retrieved = $models->get()->sort(function ($a, $b) {
                 if ($a->relevance == 0) {
                     return 1;
                 }
@@ -107,13 +109,14 @@ class Helpers
             })->values();
 
             $sliced = $retrieved->slice(($current_page * $items) - $items, $items)->values();
+
             return new LengthAwarePaginator($sliced, count($retrieved), $items, $current_page, [
                 'path' => $request->url(),
                 'query' => $request->query(),
             ]);
         }
 
-        if ($models == null || !$models->first()) {
+        if ($models == null || ! $models->first()) {
             return $models->paginate();
         }
 
@@ -140,17 +143,19 @@ class Helpers
 
         $models = $models->paginate($items);
         $models->appends($request->except('page'))->links();
+
         return $models;
     }
 
-    public function searchItems(FormRequest $request, $model, $wheres) {
+    public function searchItems(FormRequest $request, $model, $wheres)
+    {
         $sortBy = 'created_at';
-        $order  = 'asc';
+        $order = 'asc';
         $items = 5;
 
         $models = $model::search($request->query('search'));
 
-        if ($models == null || !$models->first()) {
+        if ($models == null || ! $models->first()) {
             return $models->paginate();
         }
 

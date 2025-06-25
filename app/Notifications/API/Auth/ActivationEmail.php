@@ -3,9 +3,9 @@
 namespace App\Notifications\API\Auth;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class ActivationEmail extends Notification implements ShouldQueue
 {
@@ -40,15 +40,15 @@ class ActivationEmail extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $url = url('/#/bekraeft-email?token=' . $notifiable->activation_token);
+        $url = url('/#/bekraeft-email?token='.$notifiable->activation_token);
 
         return (new MailMessage)
-                ->greeting('Hej')
-                ->subject('Bekræft din konto hos Rollespilsfabrikkens forum')
-                ->line('Vi har modtaget en anmodning vedrørende oprettelse af en konto til Rollespilsfabrikkens forum linket til denne email adresse.')
-                ->line('For at fuldføre opsætningen benyt linket herunder')
-                ->action('Bekræft konto', url($url))
-                ->line('Tak for at du anvender forummet');
+            ->greeting('Hej')
+            ->subject('Bekræft din konto hos Rollespilsfabrikkens forum')
+            ->line('Vi har modtaget en anmodning vedrørende oprettelse af en konto til Rollespilsfabrikkens forum linket til denne email adresse.')
+            ->line('For at fuldføre opsætningen benyt linket herunder')
+            ->action('Bekræft konto', url($url))
+            ->line('Tak for at du anvender forummet');
     }
 
     /**

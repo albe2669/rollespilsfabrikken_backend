@@ -3,32 +3,19 @@
 namespace App\Models;
 
 use Dyrynda\Database\Support\Casts\EfficientUuid;
+use Dyrynda\Database\Support\GeneratesUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
-use Dyrynda\Database\Support\GeneratesUuid;
 
-/**
- * Class Calendar
- *
- * @property int $id
- * @property string $uuid
- * @property int $obj_id
- * @property string $title
- * @property string $colour
- * @property string $description
- * @property string $allowed_resource
- * @property Carbon $created_at
- * @property Carbon $updated_at
- *
- * @mixin Builder
- */
 class Calendar extends Model
 {
-    use Searchable, GeneratesUuid, HasFactory;
+    use GeneratesUuid;
+    use HasFactory;
+    use Searchable;
 
     protected $casts = [
         'uuid' => EfficientUuid::class,
@@ -37,7 +24,7 @@ class Calendar extends Model
     protected $fillable = [
         'title',
         'description',
-        'colour'
+        'colour',
     ];
 
     public function getRouteKeyName()
@@ -45,35 +32,41 @@ class Calendar extends Model
         return 'uuid';
     }
 
-    public function toSearchableArray() {
+    public function toSearchableArray()
+    {
         $array = $this->toArray();
 
         $array = Arr::only($array, [
             'id',
             'title',
-            'description'
+            'description',
         ]);
 
         return $array;
     }
 
-    public function obj() {
-        return $this->belongsTo('App\Models\Obj');
+    public function obj()
+    {
+        return $this->belongsTo(Obj::class);
     }
 
-    public function permissions() {
+    public function permissions()
+    {
         return $this->obj()->first()->permissions;
     }
 
-    public function events() {
-        return $this->hasMany('App\Models\Event');
+    public function events()
+    {
+        return $this->hasMany(Event::class);
     }
 
-    public function getTableColumns() {
+    public function getTableColumns()
+    {
         return $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
     }
 
-    public function canUseRooms() {
+    public function canUseRooms()
+    {
         if ($this->allowed_resource == 'all' || $this->allowed_resource == 'rooms') {
             return true;
         }
@@ -81,7 +74,8 @@ class Calendar extends Model
         return false;
     }
 
-    public function canUseEquipment() {
+    public function canUseEquipment()
+    {
         if ($this->allowed_resource == 'all' || $this->allowed_resource == 'equipment') {
             return true;
         }
@@ -89,12 +83,13 @@ class Calendar extends Model
         return false;
     }
 
-    public function setAllowedResources(bool $rooms, bool $equipment) {
+    public function setAllowedResources(bool $rooms, bool $equipment)
+    {
         if ($rooms && $equipment) {
             $this->allowed_resource = 'all';
-        } else if ($rooms) {
+        } elseif ($rooms) {
             $this->allowed_resource = 'rooms';
-        } else if ($equipment) {
+        } elseif ($equipment) {
             $this->allowed_resource = 'equipment';
         } else {
             $this->allowed_resource = 'none';

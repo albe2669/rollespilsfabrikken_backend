@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Calendar;
+use App\Models\Obj;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CalendarFactory extends Factory
@@ -16,7 +17,7 @@ class CalendarFactory extends Factory
             'description' => fake()->text(200),
             'colour' => fake()->hexColor,
             'obj_id' => function () {
-                return (new App\Models\Obj)->create([
+                return Obj::create([
                     'type' => 'calendar',
                 ])['id'];
             },

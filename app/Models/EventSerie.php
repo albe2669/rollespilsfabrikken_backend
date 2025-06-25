@@ -17,7 +17,8 @@ use Illuminate\Support\Carbon;
  */
 class EventSerie extends Model
 {
-    public function events() {
-        return $this->hasMany('App\Models\Event', 'series_id');
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'series_id');
     }
 }

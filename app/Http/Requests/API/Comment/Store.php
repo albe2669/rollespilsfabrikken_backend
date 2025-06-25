@@ -14,7 +14,7 @@ class Store extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->can('create',[Comment::class, $this->forum]);
+        return auth()->user()->can('create', [Comment::class, $this->forum]);
     }
 
     /**
@@ -26,7 +26,7 @@ class Store extends FormRequest
     {
         return [
             'parent_id' => 'string',
-            'body' => 'string|required'
+            'body' => 'string|required',
         ];
     }
 }
